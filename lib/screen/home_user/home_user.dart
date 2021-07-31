@@ -111,7 +111,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                       Icon(
                         Icons.account_circle_rounded,
                         size: 70,
-                        color: Colors.white,
+                        color: Colors.black45.withOpacity(0.12),
                       ),
                       Padding(
                         padding: const EdgeInsets.fromLTRB(10, 17, 0, 0),
@@ -164,7 +164,9 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
             padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.black45),
+              border: Border.all(
+                color: Colors.black.withOpacity(0.18),
+              ),
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
@@ -192,7 +194,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                   ],
                 ),
                 Divider(
-                  color: Colors.black,
+                  color: Colors.black.withOpacity(0.24),
                 ),
                 Row(
                   children: [
