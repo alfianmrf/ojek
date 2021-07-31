@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ojek/common/variable.dart';
+import 'package:ojek/screen/home_user/home_user.dart';
 import 'package:ojek/screen/register_screen.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -53,7 +54,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         Container(
                           padding: EdgeInsets.only(top: 15),
                           child: MaterialButton(
-                            onPressed: (){},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => HomeUserScreen(),
+                                ),
+                              );
+                            },
                             color: secondaryColor,
                             textColor: Colors.white,
                             child: Text('Login'),
@@ -73,8 +81,11 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: TextStyle(color: Colors.white),
                       ),
                       GestureDetector(
-                        onTap: (){
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterScreen()));
+                        onTap: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => RegisterScreen()));
                         },
                         child: Text(
                           'Daftar Disini',
