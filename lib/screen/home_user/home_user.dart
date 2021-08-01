@@ -22,6 +22,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
@@ -51,7 +52,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                       boxShadow: [
                         BoxShadow(
                           blurRadius: 7,
-                          color: Colors.grey.withOpacity(0.30),
+                          color: Color(0xFFFCCCBC).withOpacity(0.40),
                         ),
                       ],
                       borderRadius: BorderRadius.all(
@@ -160,13 +161,26 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
             ),
           ),
           Container(
+            margin: EdgeInsets.only(top: 20, left: 15),
+            child: Text(
+              "Detail Perjalanan",
+              style: TextStyle(
+                  fontWeight: FontWeight.bold, color: Color(0xFF616161)),
+            ),
+          ),
+          Container(
             margin: EdgeInsets.symmetric(horizontal: 14, vertical: 20),
             padding: EdgeInsets.all(10),
             width: double.infinity,
             decoration: BoxDecoration(
-              border: Border.all(
-                color: Colors.black.withOpacity(0.18),
-              ),
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  offset: Offset(10, 0),
+                  blurRadius: 10,
+                  color: Color(0xFFFCCCBC).withOpacity(0.38),
+                ),
+              ],
               borderRadius: BorderRadius.all(
                 Radius.circular(10),
               ),
