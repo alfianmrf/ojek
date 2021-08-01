@@ -176,9 +176,9 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
               color: Colors.white,
               boxShadow: [
                 BoxShadow(
-                  offset: Offset(10, 0),
-                  blurRadius: 10,
-                  color: Color(0xFFFCCCBC).withOpacity(0.38),
+                  offset: Offset(5, 3),
+                  blurRadius: 7,
+                  color: Color(0xFFFCCCBC).withOpacity(0.30),
                 ),
               ],
               borderRadius: BorderRadius.all(
