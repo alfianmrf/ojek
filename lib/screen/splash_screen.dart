@@ -1,7 +1,10 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:ojek/model/appModel.dart';
+import 'package:ojek/screen/home_user/home_user.dart';
 import 'package:ojek/screen/login_screen.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -15,7 +18,19 @@ class _SplashScreenState extends State<SplashScreen> {
 
   removeScreen() {
     return _timer = Timer(Duration(seconds: 2), () async {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginScreen()));
+      print(Provider.of<AppModel>(context, listen: false).logedIn);
+      Provider.of<AppModel>(context, listen: false).logedIn
+          ? Navigator.pushReplacement(
+              context,
+              new MaterialPageRoute(
+                builder: (BuildContext context) => HomeUserScreen(),
+              ))
+          : Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                builder: (context) => LoginScreen(),
+              ),
+            );
     });
   }
 
@@ -23,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
+      Provider.of<AppModel>(context, listen: false).getAuth();
       removeScreen();
     });
   }

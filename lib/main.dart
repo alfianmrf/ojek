@@ -1,8 +1,21 @@
+
 import 'package:flutter/material.dart';
+import 'package:ojek/model/appModel.dart';
 import 'package:ojek/screen/splash_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 
 void main() {
-  runApp(MyApp());
+  WidgetsFlutterBinding.ensureInitialized();
+  // HttpOverrides.global = new MyHttpOverrides();
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(create: (context) => AppModel())
+    ],
+    child: Phoenix(
+      child: MyApp(),
+    ),
+  ));
 }
 
 class MyApp extends StatelessWidget {

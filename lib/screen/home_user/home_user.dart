@@ -32,10 +32,11 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
               children: [
                 Container(
                   decoration: BoxDecoration(
-                      color: Color(0xFFFCCCBC),
-                      borderRadius: BorderRadius.only(
-                          // bottomLeft: Radius.circular(120),
-                          bottomRight: Radius.circular(80))),
+                    color: Color(0xFFFCCCBC),
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(80),
+                    ),
+                  ),
                   width: double.infinity,
                   height: 250,
                 ),

@@ -23,6 +23,10 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  provider: ^5.0.0
+  flutter_phoenix: ^1.0.0
+  http: ^0.13.3
+  localstorage: ^4.0.0+1
 
 
 

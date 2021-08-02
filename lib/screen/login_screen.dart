@@ -1,7 +1,11 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:ojek/common/variable.dart';
+import 'package:ojek/model/appModel.dart';
 import 'package:ojek/screen/home_user/home_user.dart';
 import 'package:ojek/screen/register_screen.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -11,9 +15,39 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  @override
+  final _formKey = GlobalKey<FormState>();
+  final email = TextEditingController();
+  final password = TextEditingController();
+
+  void setLoginAuth() async {
+    var param = {"email": email.text, "password": password.text};
+
+    Provider.of<AppModel>(context, listen: false)
+        .setAuth(param)
+        .then((value) async {
+      print(value.message);
+      if (value.status == 200) {
+        if (value.role == "user") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeUserScreen(),
+            ),
+          );
+        }
+      } else {
+        final snackbar = SnackBar(
+          content: Text(value.message),
+          
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      }
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _formKey,
       backgroundColor: primaryColor,
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -39,12 +73,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       children: [
                         TextFormField(
+                          controller: email,
                           decoration: InputDecoration(
                             labelText: "Email",
                           ),
                           keyboardType: TextInputType.emailAddress,
                         ),
                         TextFormField(
+                          controller: password,
                           decoration: InputDecoration(
                             labelText: "Password",
                           ),
@@ -55,12 +91,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           padding: EdgeInsets.only(top: 15),
                           child: MaterialButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => HomeUserScreen(),
-                                ),
-                              );
+                              setLoginAuth();
+                              // Navigator.push(
+                              //   context,
+                              //   MaterialPageRoute(
+                              //     builder: (context) => HomeUserScreen(),
+                              //   ),
+                              // );
                             },
                             color: secondaryColor,
                             textColor: Colors.white,
