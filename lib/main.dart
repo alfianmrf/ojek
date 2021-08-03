@@ -1,6 +1,5 @@
-
 import 'package:flutter/material.dart';
-import 'package:ojek/model/appModel.dart';
+import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -10,7 +9,8 @@ void main() {
   // HttpOverrides.global = new MyHttpOverrides();
   runApp(MultiProvider(
     providers: [
-      ChangeNotifierProvider(create: (context) => AppModel())
+      ChangeNotifierProvider(create: (context) => AppModel()),
+      ChangeNotifierProvider(create: (context) => Register())
     ],
     child: Phoenix(
       child: MyApp(),

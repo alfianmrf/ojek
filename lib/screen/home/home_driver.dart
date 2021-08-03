@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ojek/common/variable.dart';
-import 'package:ojek/model/appModel.dart';
+import 'package:ojek/model/model.dart';
 import 'package:provider/provider.dart';
 import 'package:fluttericon/font_awesome5_icons.dart';
 import 'package:fluttericon/typicons_icons.dart';
