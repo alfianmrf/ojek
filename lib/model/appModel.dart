@@ -7,7 +7,7 @@ import 'package:ojek/utils/globalURL.dart';
 import 'package:localstorage/localstorage.dart';
 
 class AppModel with ChangeNotifier {
-  late LoginAuth auth;
+  LoginAuth? auth;
   late bool logedIn = false;
 
   // AppModel() {
@@ -58,6 +58,21 @@ class AppModel with ChangeNotifier {
           logedIn = true;
           notifyListeners();
         }
+      }
+    } catch (err) {
+      print(err);
+    }
+  }
+
+  Future<void> logout() async {
+    final LocalStorage storage = LocalStorage("ojek");
+    try {
+      final ready = await storage.ready;
+      if (ready) {
+        await storage.deleteItem("auth");
+        auth = null;
+        logedIn = false;
+        notifyListeners();
       }
     } catch (err) {
       print(err);

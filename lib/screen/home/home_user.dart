@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ojek/common/variable.dart';
+import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:ojek/model/appModel.dart';
-import 'package:ojek/screen/home/home_driver.dart';
 import 'package:provider/provider.dart';
+
+import '../theme.dart';
 
 class HomeUserScreen extends StatefulWidget {
   const HomeUserScreen({Key? key}) : super(key: key);
@@ -12,17 +13,66 @@ class HomeUserScreen extends StatefulWidget {
 }
 
 class _HomeUserScreenState extends State<HomeUserScreen> {
-  final ButtonStyle flatButtonStyle = TextButton.styleFrom(
-    primary: Colors.white,
-    minimumSize: Size(88, 44),
-    // padding: EdgeInsets.symmetric(horizontal: 16.0),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-    ),
-    backgroundColor: Color(0xFFFCCCBC),
-  );
+  Future<void> _showMyDialogLogOut() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Center(
+            child: Text(
+              'Apakah Kamu Ingin Keluar ?',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  // width: MediaQuery.of(context).size.width,
+                  // margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Tidak",
+                    ),
+                    style: flatButtonStyle,
+                  ),
+                ),
+                Container(
+                  width: 10,
+                ),
+                Expanded(
+                  // width: MediaQuery.of(context).size.width,
+                  // margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: TextButton(
+                    onPressed: () {
+                      Provider.of<AppModel>(context, listen: false)
+                          .logout()
+                          .then((value) {
+                        Phoenix.rebirth(context);
+                      });
+                    },
+                    child: Text(
+                      "Iya",
+                      style: TextStyle(
+                        color: Color(0xFFFCCCBC),
+                      ),
+                    ),
+                    style: borderButtonStyle,
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
 
-  @override
   Widget build(BuildContext context) {
     var user = Provider.of<AppModel>(context);
     return Scaffold(
@@ -133,7 +183,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                                   fontSize: 17),
                             ),
                             Text(
-                              user.auth.name,
+                              user.auth!.name,
                               style: TextStyle(
                                   color: Colors.black45, fontSize: 12),
                             ),
@@ -141,23 +191,28 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                         ),
                       ),
                       Spacer(),
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
-                        child: Row(
-                          children: [
-                            Icon(
-                              Icons.logout_outlined,
-                              size: 30,
-                              color: Colors.black45,
-                            ),
-                            Text(
-                              "Log Out",
-                              style: TextStyle(
-                                  color: Colors.black45,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.bold),
-                            ),
-                          ],
+                      GestureDetector(
+                        onTap: () {
+                          _showMyDialogLogOut();
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.fromLTRB(0, 17, 0, 0),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.logout_outlined,
+                                size: 30,
+                                color: Colors.black45,
+                              ),
+                              Text(
+                                "Log Out",
+                                style: TextStyle(
+                                    color: Colors.black45,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            ],
+                          ),
                         ),
                       )
                     ],
