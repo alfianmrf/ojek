@@ -7,6 +7,8 @@ import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/register_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'home/home_driver.dart';
+
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
 
@@ -34,11 +36,17 @@ class _LoginScreenState extends State<LoginScreen> {
               builder: (context) => HomeUserScreen(),
             ),
           );
+        } else if (value.role == "driver") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HomeDriverScreen(),
+            ),
+          );
         }
       } else {
         final snackbar = SnackBar(
           content: Text(value.message),
-          
         );
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
       }
