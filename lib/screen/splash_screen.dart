@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:ojek/model/appModel.dart';
-import 'package:ojek/screen/home_user/home_user.dart';
+import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/login_screen.dart';
 import 'package:provider/provider.dart';
 

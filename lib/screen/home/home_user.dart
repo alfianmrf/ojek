@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ojek/common/variable.dart';
+import 'package:ojek/model/appModel.dart';
+import 'package:ojek/screen/home/home_driver.dart';
+import 'package:provider/provider.dart';
 
 class HomeUserScreen extends StatefulWidget {
   const HomeUserScreen({Key? key}) : super(key: key);
@@ -16,10 +19,12 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(10)),
     ),
-    backgroundColor: primaryColor,
+    backgroundColor: Color(0xFFFCCCBC),
   );
+
   @override
   Widget build(BuildContext context) {
+    var user = Provider.of<AppModel>(context);
     return Scaffold(
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,7 +133,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                                   fontSize: 17),
                             ),
                             Text(
-                              "Nama Customer",
+                              user.auth.name,
                               style: TextStyle(
                                   color: Colors.black45, fontSize: 12),
                             ),
@@ -306,6 +311,18 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                               ),
                             ),
                           ),
+                          // TextButton(
+                          //   onPressed: () {
+                          //     Navigator.push(
+                          //       context,
+                          //       MaterialPageRoute(
+                          //         builder: (context) => HomeDriverScreen(),
+                          //       ),
+                          //     );
+                          //   },
+                          //   child: Text("driver"),
+                          //   style: flatButtonStyle,
+                          // )
                         ],
                       ),
                     ),
@@ -313,7 +330,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                 )
               ],
             ),
-          )
+          ),
         ],
       ),
     );

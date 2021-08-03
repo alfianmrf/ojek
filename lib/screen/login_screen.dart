@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:ojek/common/variable.dart';
 import 'package:ojek/model/appModel.dart';
-import 'package:ojek/screen/home_user/home_user.dart';
+import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/register_screen.dart';
 import 'package:provider/provider.dart';
 
