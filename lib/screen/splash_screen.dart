@@ -6,6 +6,8 @@ import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/login_screen.dart';
 import 'package:provider/provider.dart';
 
+import 'home/home_driver.dart';
+
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
 
@@ -20,11 +22,17 @@ class _SplashScreenState extends State<SplashScreen> {
     return _timer = Timer(Duration(seconds: 2), () async {
       print(Provider.of<AppModel>(context, listen: false).logedIn);
       Provider.of<AppModel>(context, listen: false).logedIn
-          ? Navigator.pushReplacement(
-              context,
-              new MaterialPageRoute(
-                builder: (BuildContext context) => HomeUserScreen(),
-              ))
+          ? Provider.of<AppModel>(context, listen: false).auth!.role == "user"
+              ? Navigator.pushReplacement(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (BuildContext context) => HomeUserScreen(),
+                  ))
+              : Navigator.pushReplacement(
+                  context,
+                  new MaterialPageRoute(
+                    builder: (BuildContext context) => HomeDriverScreen(),
+                  ))
           : Navigator.pushReplacement(
               context,
               MaterialPageRoute(
