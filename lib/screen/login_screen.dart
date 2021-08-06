@@ -29,7 +29,7 @@ class _LoginScreenState extends State<LoginScreen> {
         .then((value) async {
       print(value.message);
       if (value.status == 200) {
-        if (value.role == "user") {
+        if (value.role == "penumpang") {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(

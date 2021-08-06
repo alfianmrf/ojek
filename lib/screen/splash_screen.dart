@@ -22,7 +22,7 @@ class _SplashScreenState extends State<SplashScreen> {
     return _timer = Timer(Duration(seconds: 2), () async {
       print(Provider.of<AppModel>(context, listen: false).logedIn);
       Provider.of<AppModel>(context, listen: false).logedIn
-          ? Provider.of<AppModel>(context, listen: false).auth!.role == "user"
+          ? Provider.of<AppModel>(context, listen: false).auth!.role == "penumpang"
               ? Navigator.pushReplacement(
                   context,
                   new MaterialPageRoute(

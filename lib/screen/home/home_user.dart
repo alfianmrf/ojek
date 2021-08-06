@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:ojek/model/model.dart';
+import 'package:ojek/screen/map/user_map.dart';
 import 'package:provider/provider.dart';
 
 import '../theme.dart';
@@ -134,11 +135,22 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                                 Icons.add_location_alt,
                                 color: Colors.grey[400],
                               ),
-                              Container(
-                                margin: EdgeInsets.only(left: 10),
-                                child: Text(
-                                  "Tambahkan lokasi kamu",
-                                  style: TextStyle(color: Colors.grey[400]),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          UserLocationScreen(),
+                                    ),
+                                  );
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(left: 10),
+                                  child: Text(
+                                    "Tambahkan lokasi kamu",
+                                    style: TextStyle(color: Colors.grey[400]),
+                                  ),
                                 ),
                               )
                             ],
