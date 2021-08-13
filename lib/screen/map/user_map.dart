@@ -13,6 +13,7 @@ class UserLocationScreen extends StatefulWidget {
 
 class _UserLocationScreenState extends State<UserLocationScreen> {
   Completer<GoogleMapController> _controller = Completer();
+  late LatLng currentPostion;
 
   static final CameraPosition _kGooglePlex = CameraPosition(
     target: LatLng(-7.9019932, 112.5627027),
@@ -28,16 +29,29 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
   @override
   void initState() {
     super.initState();
+    _getUserLocation();
   }
 
-  @override
+  void _getUserLocation() async {
+    var position = await GeolocatorPlatform.instance
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+
+    setState(() {
+      currentPostion = LatLng(position.latitude, position.longitude);
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
           GoogleMap(
             mapType: MapType.normal,
-            initialCameraPosition: _kGooglePlex,
+            myLocationEnabled: true,
+            initialCameraPosition: CameraPosition(
+              target: currentPostion,
+              zoom: 14,
+            ),
             onMapCreated: (GoogleMapController controller) {
               _controller.complete(controller);
             },
