@@ -13,6 +13,8 @@ class HomeUserScreen extends StatefulWidget {
   _HomeUserScreenState createState() => _HomeUserScreenState();
 }
 
+String address = "";
+
 class _HomeUserScreenState extends State<HomeUserScreen> {
   Future<void> _showMyDialogLogOut() async {
     return showDialog<void>(
@@ -72,6 +74,10 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
         );
       },
     );
+  }
+
+  getBackAddress(dynamic value) {
+    setState(() {});
   }
 
   Widget build(BuildContext context) {
@@ -143,14 +149,19 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                                       builder: (context) =>
                                           UserLocationScreen(),
                                     ),
-                                  );
+                                  ).then(getBackAddress);
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(left: 10),
+                                  width: 200,
                                   child: Text(
-                                    "Tambahkan lokasi kamu",
-                                    style: TextStyle(color: Colors.grey[400]),
-                                  ),
+                                      address != ""
+                                          ? "$address"
+                                          : "Tambahkan lokasi kamu",
+                                      style: TextStyle(color: Colors.grey[400]),
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                      softWrap: false),
                                 ),
                               )
                             ],
