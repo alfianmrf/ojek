@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:ojek/model/model.dart';
+import 'package:ojek/screen/map/destination_map.dart';
 import 'package:ojek/screen/map/user_map.dart';
 import 'package:provider/provider.dart';
 
@@ -172,7 +173,15 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                           height: 52,
                           padding: EdgeInsets.all(8),
                           child: TextButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      DestinationMappScreen(title: "Cari"),
+                                ),
+                              );
+                            },
                             style: flatButtonStyle,
                             child: Text("PILIH DESTINASI",
                                 style: TextStyle(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ojek/model/model.dart';
+import 'package:ojek/model/searc_map.dart';
 import 'package:ojek/screen/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
@@ -10,7 +11,8 @@ void main() {
   runApp(MultiProvider(
     providers: [
       ChangeNotifierProvider(create: (context) => AppModel()),
-      ChangeNotifierProvider(create: (context) => Register())
+      ChangeNotifierProvider(create: (context) => Register()),
+      ChangeNotifierProvider(create: (context) => MapSearch()),
     ],
     child: Phoenix(
       child: MyApp(),
