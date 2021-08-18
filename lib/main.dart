@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ojek/model/driver_map_model.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/model/searc_map.dart';
@@ -15,6 +16,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => Register()),
       ChangeNotifierProvider(create: (context) => MapSearch()),
       ChangeNotifierProvider(create: (context) => MapModel()),
+      ChangeNotifierProvider(create: (context) => DriverModel()),
     ],
     child: Phoenix(
       child: MyApp(),
