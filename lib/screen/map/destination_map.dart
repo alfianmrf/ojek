@@ -89,7 +89,7 @@ class _DestinationMappScreenState extends State<DestinationMappScreen> {
             margin: EdgeInsets.only(bottom: 130),
             child: GoogleMap(
               mapType: MapType.normal,
-              myLocationEnabled: true,
+              // myLocationEnabled: true,
               initialCameraPosition: CameraPosition(
                 target: currentPostion,
                 zoom: 14,

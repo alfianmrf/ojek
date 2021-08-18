@@ -108,3 +108,9 @@ class LoginResult {
   LoginResult(
       {required this.status, required this.message, required this.role});
 }
+
+class MessageResult {
+  int status;
+  String message;
+  MessageResult({required this.status, required this.message});
+}

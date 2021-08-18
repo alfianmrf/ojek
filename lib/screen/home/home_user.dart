@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
+import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/map/destination_map.dart';
 import 'package:ojek/screen/map/user_map.dart';
@@ -17,6 +18,8 @@ class HomeUserScreen extends StatefulWidget {
 String address = "";
 
 class _HomeUserScreenState extends State<HomeUserScreen> {
+  final _formKey = GlobalKey<FormState>();
+
   Future<void> _showMyDialogLogOut() async {
     return showDialog<void>(
       context: context,
@@ -84,6 +87,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
   Widget build(BuildContext context) {
     var user = Provider.of<AppModel>(context);
     return Scaffold(
+      key: _formKey,
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -174,13 +178,24 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                           padding: EdgeInsets.all(8),
                           child: TextButton(
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      DestinationMappScreen(title: "Cari"),
-                                ),
-                              );
+                              var pickup =
+                                  Provider.of<MapModel>(context, listen: false);
+                              if (pickup.pickupLat != 0 ||
+                                  pickup.destinationLong != 0) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DestinationMappScreen(title: "Cari"),
+                                  ),
+                                );
+                              } else {
+                                final snackbar = SnackBar(
+                                  content: Text("Maaf, isi lokasi kamu ya :("),
+                                );
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(snackbar);
+                              }
                             },
                             style: flatButtonStyle,
                             child: Text("PILIH DESTINASI",

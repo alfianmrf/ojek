@@ -4,8 +4,12 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:ojek/common/variable.dart';
+import 'package:ojek/model/map_model.dart';
+import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/theme.dart';
+import 'package:provider/provider.dart';
 
 class UserLocationScreen extends StatefulWidget {
   const UserLocationScreen({Key? key}) : super(key: key);
@@ -17,8 +21,11 @@ class UserLocationScreen extends StatefulWidget {
 class _UserLocationScreenState extends State<UserLocationScreen> {
   Completer<GoogleMapController> _controller = Completer();
   late LatLng currentPostion;
-  TextEditingController alamat = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+  final List<Marker> _markers = [];
+
+  TextEditingController alamatUser = TextEditingController();
+  TextEditingController alamatDestinasi = TextEditingController();
 
   @override
   void initState() {
@@ -36,14 +43,46 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
   }
 
   _getCurrentLocation() async {
+    var pickup = Provider.of<MapModel>(context, listen: false);
     List<Placemark> placemarks = await placemarkFromCoordinates(
         currentPostion.latitude, currentPostion.longitude);
     address =
-        "${placemarks[0].thoroughfare} (${alamat.text}), ${placemarks[0].locality}, ${placemarks[0].subLocality}, ${placemarks[0].subAdministrativeArea}, ${placemarks[0].postalCode}";
-    Navigator.pop(context);
+        "${placemarks[0].street} , ${placemarks[0].locality}, ${placemarks[0].subLocality}, ${placemarks[0].subAdministrativeArea}, ${placemarks[0].postalCode}";
+    alamatUser.text = address;
+    pickup.pickupLat = currentPostion.latitude;
+    pickup.pickupLong = currentPostion.longitude;
+    _getDestinationLocation();
+  }
+
+  _getDestinationLocation() async {
+    var pickup = Provider.of<MapModel>(context, listen: false);
+    List<Placemark> placemarks = await placemarkFromCoordinates(
+        _markers[0].position.latitude, _markers[0].position.longitude);
+    address =
+        "${placemarks[0].street}, ${placemarks[0].locality}, ${placemarks[0].subLocality}, ${placemarks[0].subAdministrativeArea}, ${placemarks[0].postalCode}";
+    pickup.destinationLat = _markers[0].position.latitude;
+    pickup.destinationLong = _markers[0].position.longitude;
+    alamatDestinasi.text = address;
+  }
+
+  Future<void> cariDriver() async {
+    Provider.of<MapModel>(context, listen: false)
+        .searchDriver(
+            Provider.of<AppModel>(context, listen: false).auth!.accessToken)
+        .then((value) {
+      if (value.status == 201) {
+        print("berhasil");
+      } else {
+        final snackbar = SnackBar(
+          content: Text(value.message),
+        );
+        ScaffoldMessenger.of(context).showSnackBar(snackbar);
+      }
+    });
   }
 
   Widget build(BuildContext context) {
+    var userMap = Provider.of<MapModel>(context);
     return Scaffold(
       key: _formKey,
       appBar: AppBar(
@@ -75,16 +114,31 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
       body: Stack(
         children: [
           Container(
-            margin: EdgeInsets.only(bottom: 130),
+            margin: EdgeInsets.only(bottom: 200),
             child: GoogleMap(
               mapType: MapType.normal,
               myLocationEnabled: true,
               initialCameraPosition: CameraPosition(
                 target: currentPostion,
-                zoom: 14,
+                zoom: 16,
               ),
-              onMapCreated: (GoogleMapController controller) {
-                _controller.complete(controller);
+              markers: _markers.toSet(),
+              onMapCreated: (controller) {
+                final marker = Marker(
+                  markerId: MarkerId('0'),
+                  position:
+                      LatLng(currentPostion.latitude, currentPostion.longitude),
+                );
+
+                _markers.add(marker);
+              },
+              onCameraMove: (position) {
+                setState(() {
+                  _markers.first =
+                      _markers.first.copyWith(positionParam: position.target);
+                  // _getDestinationLocation();
+                  // print(_markers[0].position.longitude);
+                });
               },
             ),
           ),
@@ -95,8 +149,14 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
             child: Container(
               margin: EdgeInsets.symmetric(horizontal: 10),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text(
+                    "Lokasi Anda",
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
                   Container(
+                    height: 40,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       boxShadow: [
@@ -106,10 +166,11 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
                         ),
                       ],
                     ),
-                    margin: EdgeInsets.only(bottom: 10),
+                    margin: EdgeInsets.only(bottom: 10, top: 5),
                     child: TextField(
-                      controller: alamat,
+                      controller: alamatUser,
                       decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(top: 5, left: 12),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(5.0),
                             borderSide: BorderSide(
@@ -123,24 +184,80 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
                           fillColor: Colors.white70),
                     ),
                   ),
+                  Text(
+                    "Destinasi",
+                    style: TextStyle(color: Colors.grey[400]),
+                  ),
                   Container(
-                    margin: EdgeInsets.only(bottom: 5),
-                    width: double.infinity,
-                    height: 50,
-                    child: TextButton(
-                      onPressed: () {
-                        if (alamat.text == "") {
-                          final snackbar = SnackBar(
-                            content: Text("Maaf, isi no alamat ya? :("),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackbar);
-                        } else {
-                          _getCurrentLocation();
-                        }
-                      },
-                      child: Text("Ambil Lokasi Saat ini"),
-                      style: flatButtonStyle,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 5,
+                        ),
+                      ],
                     ),
+                    margin: EdgeInsets.only(bottom: 10, top: 5),
+                    child: TextField(
+                      controller: alamatDestinasi,
+                      decoration: InputDecoration(
+                          contentPadding: EdgeInsets.only(top: 5, left: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(5.0),
+                            borderSide: BorderSide(
+                              width: 0,
+                              style: BorderStyle.none,
+                            ),
+                          ),
+                          filled: true,
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          hintText: "Jl. Ahmad Yani No 90",
+                          fillColor: Colors.white70),
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          margin: EdgeInsets.only(bottom: 5),
+                          height: 40,
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                _getCurrentLocation();
+                              });
+                            },
+                            child: Text("Proses"),
+                            style: flatButtonStyle,
+                          ),
+                        ),
+                      ),
+                      alamatUser.text.length != 0
+                          ? Container(
+                              width: 10,
+                            )
+                          : Container(),
+                      alamatUser.text.length != 0
+                          ? Expanded(
+                              child: Container(
+                                margin: EdgeInsets.only(bottom: 5),
+                                height: 40,
+                                child: TextButton(
+                                  onPressed: () {
+                                    cariDriver();
+                                  },
+                                  child: Text(
+                                    "Cari Driver",
+                                    style: TextStyle(color: Color(0xFFFCCCBC)),
+                                  ),
+                                  style: borderButtonStyle,
+                                ),
+                              ),
+                            )
+                          : Container(),
+                    ],
                   ),
                 ],
               ),
