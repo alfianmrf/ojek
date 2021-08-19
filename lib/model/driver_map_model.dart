@@ -3,12 +3,15 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ojek/model/model.dart';
 import 'package:ojek/utils/globalURL.dart';
 
 class DriverModel with ChangeNotifier {
   late List<ListPenumpang> listPenumpang = [];
 
-  Future<void> getListPenumpang(String token) async {
+  Future<MessageResult> getListPenumpang(String token) async {
+    var message =
+        MessageResult(status: 500, message: "Maaf, ada Kesalahan Server");
     var res = await http.get(Uri.parse(listPenumpangURL), headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer $token'
@@ -20,8 +23,29 @@ class DriverModel with ChangeNotifier {
       for (var item in decode) {
         listPenumpang.add(ListPenumpang.fromJson(item));
       }
+      message = MessageResult(status: 200, message: "Berhasil");
+      notifyListeners();
+      return message;
     }
     notifyListeners();
+    return message;
+  }
+
+  Future<bool> acceptOrder(String token, int orderId) async {
+    var param = <String, dynamic>{'order_id': orderId};
+    var res = await http.post(Uri.parse(ordereAcceptURL),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+        body: json.encode(param));
+    if (res.statusCode == 200) {
+      getListPenumpang(token);
+      notifyListeners();
+      return true;
+    }
+    notifyListeners();
+    return false;
   }
 }
 
