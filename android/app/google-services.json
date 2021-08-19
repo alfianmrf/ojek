@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "281936873027",
+    "project_id": "my-ojek-2828b",
+    "storage_bucket": "my-ojek-2828b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:281936873027:android:b204437ed7706fca3976f6",
+        "android_client_info": {
+          "package_name": "com.example.ojek"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "281936873027-hd5ug397dui598rtq2qt6lo660pubua4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.ojek",
+            "certificate_hash": "f8ce1199b4c22343264d9714560cbfd7eb493e16"
+          }
+        },
+        {
+          "client_id": "281936873027-pnhu8fogig71l6jjtstl1r8sf953docv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAK6_HswmJ70J9srpQm63wBkECAO5-BK4o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "281936873027-pnhu8fogig71l6jjtstl1r8sf953docv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
