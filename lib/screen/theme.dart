@@ -2,6 +2,8 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ojek/main.dart';
 import 'package:flutter/material.dart';
 
+Color accentColor = Color(0xFFFCCCBC);
+
 final ButtonStyle flatButtonStyle = TextButton.styleFrom(
   primary: Colors.white,
   minimumSize: Size(88, 44),

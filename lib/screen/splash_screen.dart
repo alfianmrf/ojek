@@ -22,7 +22,8 @@ class _SplashScreenState extends State<SplashScreen> {
     return _timer = Timer(Duration(seconds: 2), () async {
       print(Provider.of<AppModel>(context, listen: false).logedIn);
       Provider.of<AppModel>(context, listen: false).logedIn
-          ? Provider.of<AppModel>(context, listen: false).auth!.role == "penumpang"
+          ? Provider.of<AppModel>(context, listen: false).auth!.role ==
+                  "penumpang"
               ? Navigator.pushReplacement(
                   context,
                   new MaterialPageRoute(
@@ -60,14 +61,13 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xFFFCCCBC),
       body: Center(
-        child: Image.network(
-          "https://shejek.id/assets/img/core-img/logo-small.png",
-          fit: BoxFit.contain,
-          width: 200,
-        ),
-      ),
+          child: Image.asset(
+        'assets/images/logoWithBackground.png',
+        fit: BoxFit.contain,
+        width: 500,
+      )),
     );
   }
 }

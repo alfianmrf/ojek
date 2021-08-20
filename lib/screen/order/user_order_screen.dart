@@ -26,10 +26,10 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Image.network(
-              "https://shejek.id/assets/img/core-img/logo-small.png",
+            Image.asset(
+              'assets/images/logoWithBackground.png',
               fit: BoxFit.contain,
-              width: 170,
+              width: 300,
             ),
             Container(
               child: Column(
