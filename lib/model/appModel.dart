@@ -110,7 +110,10 @@ class LoginResult {
 }
 
 class MessageResult {
+  List<String> driverUuid;
+
   int status;
   String message;
-  MessageResult({required this.status, required this.message});
+  MessageResult(
+      {required this.status, required this.message, required this.driverUuid});
 }

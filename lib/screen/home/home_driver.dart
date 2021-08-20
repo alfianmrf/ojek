@@ -15,6 +15,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:intl/intl.dart';
 
 import '../theme.dart';
 
@@ -26,9 +27,11 @@ class HomeDriverScreen extends StatefulWidget {
 }
 
 class _HomeDriverScreenState extends State<HomeDriverScreen> {
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: 'id_ID', decimalDigits: 0);
   Completer<GoogleMapController> _controller = Completer();
   late LatLng currentPostion;
-  int index = 1;
+  int? index;
   final List<Marker> _markers = [];
   List<Marker> list = [];
 
@@ -49,8 +52,9 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     OneSignal.shared.setNotificationWillShowInForegroundHandler(
         (OSNotificationReceivedEvent event) {
       print("keluaar waktu notif muncul");
-      _getListPenumpang();
+      _getListOrderan();
 
+      // _getListPenumpang();
       // Will be called whenever a notification is received in foreground
       // Display Notification, pass null param for not displaying the notification
       event.complete(event.notification);
@@ -65,13 +69,17 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     WidgetsBinding.instance!.addPostFrameCallback((_) async {
       _getListOrderan();
       _getUserLocation();
-      _getListPenumpang();
+      // _getListPenumpang();
     });
   }
 
   void _getListOrderan() async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
-    Provider.of<DriverModel>(context, listen: false).getListOrderNow(auth);
+    Provider.of<DriverModel>(context, listen: false)
+        .getListOrderNow(auth)
+        .then((value) {
+      print(value.status);
+    });
   }
 
   void _getListPenumpang() async {
@@ -93,6 +101,9 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
         .then((value) {
       if (value == true) {
         _sendNotifToUser(uuid);
+        setState(() {
+          list = [];
+        });
       }
     });
   }
@@ -100,7 +111,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
   void _getPenumpangByIndex() async {
     _markers.clear();
     var penumpang =
-        Provider.of<DriverModel>(context, listen: false).listPenumpang[index];
+        Provider.of<DriverModel>(context, listen: false).listPenumpang[index!];
     setState(() {
       list = [
         Marker(
@@ -136,7 +147,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
   void _sendNotifToUser(String uuid) async {
     var param = <String, dynamic>{
       "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
-      "include_external_user_ids": [uuid],
+      "include_player_ids": [uuid],
       "data": {"role": "user"},
       "contents": {"en": "Driver sedang menuju ke tempat kamu nih."}
     };
@@ -213,6 +224,10 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
   void _cancelOrder(int orderId) {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
     Provider.of<DriverModel>(context, listen: false).cancelOrder(orderId, auth);
+    index = 1000000;
+    setState(() {
+      list = [];
+    });
   }
 
   @override
@@ -220,6 +235,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     return Scaffold(
       body: Consumer<DriverModel>(
         builder: (context, value, child) {
+          print(value.listPenumpang.length);
           return value.isLoading
               ? spinkit
               : SingleChildScrollView(
@@ -419,7 +435,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                       Container(
                         margin: EdgeInsets.only(top: 20, left: 15),
                         child: Text(
-                          value.onTheWay != null
+                          value.isOnTheWay
                               ? "Order Sedang Berjalan "
                               : "Order Masuk :",
                           style: TextStyle(
@@ -430,7 +446,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                       Container(
                         child: Column(
                           children: [
-                            value.onTheWay != null
+                            value.isOnTheWay
                                 ? GestureDetector(
                                     onTap: () {
                                       _getPenumpangByIndex();
@@ -632,49 +648,56 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                       ),
                                                     ),
                                                     Spacer(),
-                                                    Container(
-                                                      child: Row(
-                                                        children: [
-                                                          GestureDetector(
-                                                            onTap: () {
-                                                              _cancelOrder(value
-                                                                  .listPenumpang[
-                                                                      i]
-                                                                  .id);
-                                                            },
-                                                            child: Icon(
-                                                              Icons
-                                                                  .cancel_outlined,
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Container(
+                                                          margin:
+                                                              EdgeInsets.only(
+                                                                  bottom: 5),
+                                                          child: Text(
+                                                            formatCurrency
+                                                                .format(value
+                                                                    .listPenumpang[
+                                                                        i]
+                                                                    .fee),
+                                                            style: TextStyle(
                                                               color: Colors
-                                                                  .redAccent,
-                                                              size: 40,
+                                                                  .black54,
+                                                              fontSize: 14,
                                                             ),
                                                           ),
-                                                          Container(
-                                                            width: 8,
-                                                          ),
-                                                          GestureDetector(
+                                                        ),
+                                                        Container(
+                                                          child:
+                                                              GestureDetector(
                                                             onTap: () {
-                                                              _terimaPesanan(
-                                                                  value
-                                                                      .listPenumpang[
-                                                                          i]
-                                                                      .id,
-                                                                  value
-                                                                      .listPenumpang[
-                                                                          i]
-                                                                      .uuid);
+                                                              if (index == i) {
+                                                                _terimaPesanan(
+                                                                    value
+                                                                        .listPenumpang[
+                                                                            i]
+                                                                        .id,
+                                                                    value
+                                                                        .listPenumpang[
+                                                                            i]
+                                                                        .uuid);
+                                                              }
                                                             },
                                                             child: Icon(
                                                               Icons
                                                                   .check_circle,
-                                                              color:
-                                                                  primaryColor,
+                                                              color: index != i
+                                                                  ? Color(
+                                                                      0xFFabe6ed)
+                                                                  : primaryColor,
                                                               size: 40,
                                                             ),
-                                                          )
-                                                        ],
-                                                      ),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     )
                                                   ],
                                                 )

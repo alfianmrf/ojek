@@ -9,29 +9,37 @@ import 'package:ojek/utils/globalURL.dart';
 class DriverModel with ChangeNotifier {
   late List<ListPenumpang> listPenumpang = [];
   late ListPenumpang onTheWay;
+
   late bool isLoading = true;
+  late bool isOnTheWay = false;
 
   Future<MessageResult> getListOrderNow(String token) async {
-    var message =
-        MessageResult(status: 500, message: "Maaf, ada Kesalahan Server");
+    var message = MessageResult(
+        status: 500, message: "Maaf, ada Kesalahan Server", driverUuid: []);
     var res = await http.get(Uri.parse(currentOrderURL), headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer $token'
     });
     var decode = json.decode(res.body);
-    if (res.statusCode == 200) {
+    if (res.statusCode == 201) {
+      isOnTheWay = false;
+      getListPenumpang(token);
+      return message;
+    } else if (res.statusCode == 200) {
+      isOnTheWay = true;
       onTheWay = ListPenumpang.fromJson(decode);
-      print("woandoawnodwa");
-      print(json.encode(onTheWay));
+      message = MessageResult(
+          status: res.statusCode, message: "Ada Orderan", driverUuid: []);
+      notifyListeners();
+      return message;
     }
-
     return message;
   }
 
   Future<MessageResult> getListPenumpang(String token) async {
     listPenumpang = [];
-    var message =
-        MessageResult(status: 500, message: "Maaf, ada Kesalahan Server");
+    var message = MessageResult(
+        status: 500, message: "Maaf, ada Kesalahan Server", driverUuid: []);
     var res = await http.get(Uri.parse(listPenumpangURL), headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer $token'
@@ -43,7 +51,7 @@ class DriverModel with ChangeNotifier {
       for (var item in decode) {
         listPenumpang.add(ListPenumpang.fromJson(item));
       }
-      message = MessageResult(status: 200, message: "Berhasil");
+      message = MessageResult(status: 200, message: "Berhasil", driverUuid: []);
       isLoading = false;
       notifyListeners();
       return message;
@@ -64,6 +72,7 @@ class DriverModel with ChangeNotifier {
     print(res.body);
     print(orderId);
     if (res.statusCode == 200) {
+      getListOrderNow(token);
       notifyListeners();
       return true;
     }
@@ -83,7 +92,8 @@ class DriverModel with ChangeNotifier {
         body: json.encode(param));
     print(json.decode(res.body));
     if (res.statusCode == 200) {
-      getListPenumpang(token);
+      // getListPenumpang(token);
+      getListOrderNow(token);
       notifyListeners();
     }
   }

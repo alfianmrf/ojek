@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/order/user_order_screen.dart';
 import 'package:ojek/screen/theme.dart';
+import 'package:ojek/utils/globalURL.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:http/http.dart' as http;
@@ -71,14 +73,34 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
     alamatDestinasi.text = address;
   }
 
+  void _sendNotifToDriver(List<String> uuid) async {
+    var param = <String, dynamic>{
+      "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
+      "include_player_ids": uuid,
+      "data": {"role": "driver"},
+      "contents": {"en": "Ada orderan baru masuk"}
+    };
+    print(json.encode(param));
+    var token = "MGM3NDZmMDUtM2U2ZS00YTY4LThlM2MtMmYzZGIyZDc2NDky";
+    var res = await http.post(Uri.parse(sendNotificationOrderURL),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+        body: json.encode(param));
+    print(json.decode(res.body));
+  }
+
   Future<void> cariDriver() async {
     Provider.of<MapModel>(context, listen: false)
         .searchDriver(
             Provider.of<AppModel>(context, listen: false).auth!.accessToken,
             alamatDestinasi.text)
         .then((value) {
-      if (value.status == 201) {
+      if (value != null) {
+        _sendNotifToDriver(value.driverUuid);
         print("berhasil");
+        print(value.driverUuid);
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -87,7 +109,7 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
         );
       } else {
         final snackbar = SnackBar(
-          content: Text(value.message),
+          content: Text("Maaf, Ada Kesalahan server"),
         );
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
       }

@@ -69,96 +69,98 @@ class _LoginScreenState extends State<LoginScreen> {
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        padding: EdgeInsets.symmetric(horizontal: 15),
-        child: Stack(
-          children: [
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Stack(
                 children: [
-                  Card(
-                    child: Container(
-                      width: double.infinity,
-                      padding: EdgeInsets.all(20),
-                      child: Column(
-                        children: [
-                          TextFormField(
-                            controller: email,
-                            decoration: InputDecoration(
-                              labelText: "Email",
+                  Container(
+                    padding: EdgeInsets.fromLTRB(14, 50, 14, 10),
+                    child: Card(
+                      child: Container(
+                        width: double.infinity,
+                        padding: EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: email,
+                              decoration: InputDecoration(
+                                labelText: "Email",
+                              ),
+                              keyboardType: TextInputType.emailAddress,
                             ),
-                            keyboardType: TextInputType.emailAddress,
-                          ),
-                          TextFormField(
-                            controller: password,
-                            decoration: InputDecoration(
-                              labelText: "Password",
+                            TextFormField(
+                              controller: password,
+                              decoration: InputDecoration(
+                                labelText: "Password",
+                              ),
+                              obscureText: true,
+                              keyboardType: TextInputType.text,
                             ),
-                            obscureText: true,
-                            keyboardType: TextInputType.text,
-                          ),
-                          Container(
-                            padding: EdgeInsets.only(top: 15),
-                            child: MaterialButton(
-                              onPressed: () {
-                                setLoginAuth();
-                                // Navigator.push(
-                                //   context,
-                                //   MaterialPageRoute(
-                                //     builder: (context) => HomeDriverScreen(),
-                                //   ),
-                                // );
-                              },
-                              color: accentColor,
-                              textColor: Colors.white,
-                              child: Text('Login'),
+                            Container(
+                              padding: EdgeInsets.only(top: 15),
+                              child: MaterialButton(
+                                onPressed: () {
+                                  setLoginAuth();
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => HomeDriverScreen(),
+                                  //   ),
+                                  // );
+                                },
+                                color: accentColor,
+                                textColor: Colors.white,
+                                child: Text('Login'),
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                  Container(
-                    padding: EdgeInsets.only(top: 15),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Tidak mempunyai akun ? ',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => RegisterScreen()));
-                          },
-                          child: Text(
-                            'Daftar Disini',
-                            style: TextStyle(color: Colors.redAccent),
-                          ),
-                        ),
-                      ],
+                  Positioned(
+                    left: 0,
+                    right: 0,
+                    top: 3,
+                    child: Container(
+                      height: 100,
+                      child: Image.asset(
+                        'assets/images/logoNoBackground.png',
+                        fit: BoxFit.contain,
+                        width: 100,
+                      ),
                     ),
                   ),
                 ],
               ),
-            ),
-            Positioned(
-              left: 0,
-              right: 0,
-              top: 120,
-              child: Container(
-                height: 100,
-                child: Image.asset(
-                  'assets/images/logoNoBackground.png',
-                  fit: BoxFit.contain,
-                  width: 100,
+              Container(
+                padding: EdgeInsets.only(top: 15),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Tidak mempunyai akun ? ',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => RegisterScreen()));
+                      },
+                      child: Text(
+                        'Daftar Disini',
+                        style: TextStyle(color: Colors.redAccent),
+                      ),
+                    ),
+                  ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

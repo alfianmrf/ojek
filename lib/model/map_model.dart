@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:ojek/model/get_order.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/utils/globalURL.dart';
 
@@ -12,10 +13,9 @@ class MapModel with ChangeNotifier {
   late double destinationLat = 0;
   late double destinationLong = 0;
 
-  Future<MessageResult> searchDriver(String token,String address) async {
+  Future<GetOrderUser?> searchDriver(String token, String address) async {
     print(token);
-    var result =
-        MessageResult(status: 500, message: "Maaf terjadi kesalahan server");
+    GetOrderUser? result;
     var param = <String, dynamic>{
       "pickup_lat": pickupLat,
       "pickup_long": pickupLong,
@@ -33,11 +33,13 @@ class MapModel with ChangeNotifier {
       },
       body: json.encode(param),
     );
-
+    print(res.statusCode);
     print(json.encode(res.body));
+    var decode = json.decode(res.body);
 
-    if (res.statusCode == 201) {
-      result = MessageResult(status: res.statusCode, message: "Berhasil");
+    if (res.statusCode == 200) {
+      result = GetOrderUser.fromJson(decode);
+      print(result);
       notifyListeners();
       return result;
     }

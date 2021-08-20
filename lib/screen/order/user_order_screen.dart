@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,6 +10,7 @@ import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/theme.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
 class UserOrderScreen extends StatefulWidget {
@@ -20,6 +22,33 @@ class UserOrderScreen extends StatefulWidget {
 
 class _UserOrderScreenState extends State<UserOrderScreen> {
   @override
+  @override
+  void initState() {
+    super.initState();
+    OneSignal.shared.setNotificationWillShowInForegroundHandler(
+        (OSNotificationReceivedEvent event) {
+      print("keluaar waktu notif muncul");
+      print(event.notification.body);
+      // print(event.notification.additionalData);
+      var data = event.notification.additionalData;
+      if (data!['role'] ==
+          Provider.of<AppModel>(context, listen: false).auth!.role) {
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (context) => HomeUserScreen()));
+      }
+
+      // Will be called whenever a notification is received in foreground
+      // Display Notification, pass null param for not displaying the notification
+      event.complete(event.notification);
+    });
+
+    OneSignal.shared
+        .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
+      print("ketika di klik");
+      // Will be called whenever a notification is opened/button pressed.
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
@@ -27,9 +56,9 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/images/logoWithBackground.png',
+              'assets/images/logoNoBackground.png',
               fit: BoxFit.contain,
-              width: 300,
+              width: 170,
             ),
             Container(
               child: Column(
