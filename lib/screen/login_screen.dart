@@ -5,8 +5,10 @@ import 'package:ojek/common/variable.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/register_screen.dart';
+import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
 
+import '../main.dart';
 import 'home/home_driver.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -22,7 +24,13 @@ class _LoginScreenState extends State<LoginScreen> {
   final password = TextEditingController();
 
   void setLoginAuth() async {
-    var param = {"email": email.text, "password": password.text};
+    final status = await OneSignal.shared.getDeviceState();
+
+    var param = {
+      "email": email.text,
+      "password": password.text,
+      "uuid": status?.userId
+    };
 
     Provider.of<AppModel>(context, listen: false)
         .setAuth(param)
@@ -103,7 +111,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               // Navigator.push(
                               //   context,
                               //   MaterialPageRoute(
-                              //     builder: (context) => HomeUserScreen(),
+                              //     builder: (context) => HomeDriverScreen(),
                               //   ),
                               // );
                             },

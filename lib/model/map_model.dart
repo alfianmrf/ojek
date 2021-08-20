@@ -12,7 +12,7 @@ class MapModel with ChangeNotifier {
   late double destinationLat = 0;
   late double destinationLong = 0;
 
-  Future<MessageResult> searchDriver(String token) async {
+  Future<MessageResult> searchDriver(String token,String address) async {
     print(token);
     var result =
         MessageResult(status: 500, message: "Maaf terjadi kesalahan server");
@@ -21,7 +21,8 @@ class MapModel with ChangeNotifier {
       "pickup_long": pickupLong,
       "destination_lat": destinationLat,
       "destination_long": destinationLong,
-      "fee": 8000
+      "fee": 8000,
+      "destination_address": address
     };
 
     var res = await http.post(

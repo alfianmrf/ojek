@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ojek/model/driver_map_model.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
+import 'package:ojek/model/notification.dart';
 import 'package:ojek/model/searc_map.dart';
 import 'package:ojek/screen/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
@@ -24,12 +25,15 @@ void main() {
       ChangeNotifierProvider(create: (context) => MapSearch()),
       ChangeNotifierProvider(create: (context) => MapModel()),
       ChangeNotifierProvider(create: (context) => DriverModel()),
+      ChangeNotifierProvider(create: (context) => NotificationDriver()),
     ],
     child: Phoenix(
       child: MyApp(),
     ),
   ));
 }
+
+String uuid = "";
 
 class MyApp extends StatefulWidget {
   // This widget is the root of your application.
@@ -38,21 +42,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  @override
-  @override
+  void _getAppId() async {
+    final status = await OneSignal.shared.getDeviceState();
+    final String? osUserID = status?.userId;
+    print(osUserID);
+    print(uuid);
+  }
+
   void initState() {
     super.initState();
-    OneSignal.shared.setNotificationWillShowInForegroundHandler(
-        (OSNotificationReceivedEvent event) {
-      // Will be called whenever a notification is received in foreground
-      // Display Notification, pass null param for not displaying the notification
-      event.complete(event.notification);
-    });
-
-    OneSignal.shared
-        .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
-      // Will be called whenever a notification is opened/button pressed.
-    });
+    _getAppId();
   }
 
   Widget build(BuildContext context) {

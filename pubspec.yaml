@@ -32,6 +32,7 @@ dependencies:
   geolocator: ^7.4.0
   geocoding: ^2.0.0
   onesignal_flutter: ^3.0.0
+  flutter_spinkit: ^5.0.0
 
 
 

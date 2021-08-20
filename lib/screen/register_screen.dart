@@ -104,8 +104,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
       "password_confirmation": confPassword.text,
       "phone": hp.text,
       "role": role,
-      "nomor_kendaraan": plat.text
     };
+
+    if (role == "driver") {
+      param.addAll({"nomor_kendaraan": plat.text});
+    }
 
     print(param);
 
@@ -227,7 +230,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           child: Row(
                             children: [
                               Radio(
-                                value: "customer",
+                                value: "penumpang",
                                 activeColor: secondaryColor,
                                 groupValue: role,
                                 onChanged: (String? newValue) {

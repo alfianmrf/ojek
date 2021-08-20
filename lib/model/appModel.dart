@@ -19,6 +19,7 @@ class AppModel with ChangeNotifier {
     );
     final LocalStorage storage = LocalStorage("ojek");
     var decode = json.decode(res.body);
+    print(json.decode(res.body));
     if (res.statusCode == 200) {
       auth = LoginAuth.fromLocalJson(decode);
       logedIn = true;
@@ -76,24 +77,23 @@ class AppModel with ChangeNotifier {
 
 class LoginAuth {
   String accessToken;
-  String tokenType;
-  int expiresAt;
+  // String tokenType;
+  // int expiresAt;
   String name;
-  String email;
+  // String email;
   String role;
   String phone;
   int id;
 
-  LoginAuth(this.accessToken, this.tokenType, this.expiresAt, this.name,
-      this.email, this.id, this.role, this.phone);
+  LoginAuth(this.accessToken, this.name, this.id, this.role, this.phone);
 
   factory LoginAuth.fromLocalJson(Map<String, dynamic> json) {
     return LoginAuth(
       json["access_token"],
-      json["token_type"],
-      json["expires_in"],
+      // json["token_type"],
+      // json["expires_in"],
       json["user"]["name"],
-      json["user"]["email"],
+      // json["user"]["email"],
       json["user"]["id"],
       json["user"]["role"],
       json["user"]["phone"],

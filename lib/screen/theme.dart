@@ -1,3 +1,4 @@
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:ojek/main.dart';
 import 'package:flutter/material.dart';
 
@@ -18,4 +19,9 @@ final ButtonStyle borderButtonStyle = TextButton.styleFrom(
     side: BorderSide(color: Color(0xFFFCCCBC), width: 1),
     borderRadius: BorderRadius.all(Radius.circular(10)),
   ),
+);
+
+final spinkit = SpinKitFadingCube(
+  color: Color(0xFFFCCCBC),
+  size: 50.0,
 );

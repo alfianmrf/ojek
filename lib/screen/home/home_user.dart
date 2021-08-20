@@ -178,24 +178,12 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                           padding: EdgeInsets.all(8),
                           child: TextButton(
                             onPressed: () {
-                              var pickup =
-                                  Provider.of<MapModel>(context, listen: false);
-                              if (pickup.pickupLat != 0 ||
-                                  pickup.destinationLong != 0) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DestinationMappScreen(title: "Cari"),
-                                  ),
-                                );
-                              } else {
-                                final snackbar = SnackBar(
-                                  content: Text("Maaf, isi lokasi kamu ya :("),
-                                );
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(snackbar);
-                              }
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => UserLocationScreen(),
+                                ),
+                              ).then(getBackAddress);
                             },
                             style: flatButtonStyle,
                             child: Text("PILIH DESTINASI",
