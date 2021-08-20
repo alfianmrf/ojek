@@ -6,6 +6,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:intl/intl.dart';
 import 'package:ojek/common/variable.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
@@ -25,11 +26,14 @@ class UserLocationScreen extends StatefulWidget {
 }
 
 class _UserLocationScreenState extends State<UserLocationScreen> {
+  final formatCurrency =
+      NumberFormat.simpleCurrency(locale: 'id_ID', decimalDigits: 0);
   Completer<GoogleMapController> _controller = Completer();
   late LatLng currentPostion;
   final _formKey = GlobalKey<FormState>();
   final List<Marker> _markers = [];
   bool isLoading = true;
+  int ongkir = 0;
 
   TextEditingController alamatUser = TextEditingController();
   TextEditingController alamatDestinasi = TextEditingController();
@@ -71,6 +75,18 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
     pickup.destinationLat = _markers[0].position.latitude;
     pickup.destinationLong = _markers[0].position.longitude;
     alamatDestinasi.text = address;
+    var price = Geolocator.distanceBetween(
+        currentPostion.latitude,
+        currentPostion.longitude,
+        pickup.destinationLat,
+        pickup.destinationLong);
+    String biaya = price.toString();
+    setState(() {
+      ongkir = int.parse(biaya[0]) * 3000;
+      if (int.parse(biaya[0]) < 2) {
+        ongkir = 5000;
+      }
+    });
   }
 
   void _sendNotifToDriver(List<String> uuid) async {
@@ -95,7 +111,8 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
     Provider.of<MapModel>(context, listen: false)
         .searchDriver(
             Provider.of<AppModel>(context, listen: false).auth!.accessToken,
-            alamatDestinasi.text)
+            alamatDestinasi.text,
+            ongkir!)
         .then((value) {
       if (value != null) {
         _sendNotifToDriver(value.driverUuid);
@@ -262,6 +279,24 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
                                 hintStyle: TextStyle(color: Colors.grey[400]),
                                 hintText: "Jl. Ahmad Yani No 90",
                                 fillColor: Colors.white70),
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "Total :",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                              Text(
+                                formatCurrency.format(ongkir),
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold),
+                              ),
+                            ],
                           ),
                         ),
                         Row(

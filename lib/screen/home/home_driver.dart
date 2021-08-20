@@ -16,6 +16,7 @@ import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
+import 'package:uiblock/uiblock.dart';
 
 import '../theme.dart';
 
@@ -52,8 +53,12 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     OneSignal.shared.setNotificationWillShowInForegroundHandler(
         (OSNotificationReceivedEvent event) {
       print("keluaar waktu notif muncul");
-      _getListOrderan();
+      var data = event.notification.additionalData;
 
+      if (data!['role'] ==
+          Provider.of<AppModel>(context, listen: false).auth!.role) {
+        _getListOrderan();
+      }
       // _getListPenumpang();
       // Will be called whenever a notification is received in foreground
       // Display Notification, pass null param for not displaying the notification
@@ -100,11 +105,14 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
         .acceptOrder(auth, orderId)
         .then((value) {
       if (value == true) {
-        _sendNotifToUser(uuid);
+        UIBlock.unblock(context);
+
+        // _sendNotifToUser(uuid);
         setState(() {
           list = [];
         });
       }
+      // UIBlock.unblock(context);
     });
   }
 
@@ -227,7 +235,9 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     index = 1000000;
     setState(() {
       list = [];
+      _markers.clear();
     });
+    UIBlock.unblock(context);
   }
 
   @override
@@ -235,7 +245,6 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     return Scaffold(
       body: Consumer<DriverModel>(
         builder: (context, value, child) {
-          print(value.listPenumpang.length);
           return value.isLoading
               ? spinkit
               : SingleChildScrollView(
@@ -532,6 +541,8 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                     children: [
                                                       GestureDetector(
                                                         onTap: () {
+                                                          UIBlock.block(
+                                                              context);
                                                           _cancelOrder(value
                                                               .onTheWay.id);
                                                         },
@@ -675,6 +686,8 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                               GestureDetector(
                                                             onTap: () {
                                                               if (index == i) {
+                                                                UIBlock.block(
+                                                                    context);
                                                                 _terimaPesanan(
                                                                     value
                                                                         .listPenumpang[

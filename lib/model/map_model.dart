@@ -13,7 +13,8 @@ class MapModel with ChangeNotifier {
   late double destinationLat = 0;
   late double destinationLong = 0;
 
-  Future<GetOrderUser?> searchDriver(String token, String address) async {
+  Future<GetOrderUser?> searchDriver(
+      String token, String address, int price) async {
     print(token);
     GetOrderUser? result;
     var param = <String, dynamic>{
@@ -21,7 +22,7 @@ class MapModel with ChangeNotifier {
       "pickup_long": pickupLong,
       "destination_lat": destinationLat,
       "destination_long": destinationLong,
-      "fee": 8000,
+      "fee": price,
       "destination_address": address
     };
 
