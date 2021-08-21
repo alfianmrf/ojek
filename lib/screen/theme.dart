@@ -22,6 +22,14 @@ final ButtonStyle borderButtonStyle = TextButton.styleFrom(
     borderRadius: BorderRadius.all(Radius.circular(10)),
   ),
 );
+final ButtonStyle borderButtonStylePrimary = TextButton.styleFrom(
+  primary: Colors.black45,
+  minimumSize: Size(88, 44),
+  shape: const RoundedRectangleBorder(
+    side: BorderSide(color: Color(0xFF5EE1F1), width: 1),
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+  ),
+);
 
 final spinkit = SpinKitFadingCube(
   color: Color(0xFFFCCCBC),

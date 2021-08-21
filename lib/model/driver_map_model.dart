@@ -84,6 +84,23 @@ class DriverModel with ChangeNotifier {
     return false;
   }
 
+  Future<bool> finishOrder(String token, int id) async {
+    var param = <String, dynamic>{"order_id": id};
+    var res = await http.post(Uri.parse(finishOrderURL),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+        body: json.encode(param));
+    print(json.encode(res.body));
+    if (res.statusCode == 200) {
+      getListOrderNow(token);
+      notifyListeners();
+      return true;
+    }
+    return false;
+  }
+
   Future<void> cancelOrder(int orderId, String token) async {
     var param = <String, dynamic>{"order_id": orderId};
 
@@ -184,8 +201,8 @@ class ListPenumpang {
 }
 
 class InfoDashBoard {
-  int? pendapatanHariIni;
-  int? pendapatanBulanIni;
+  String? pendapatanHariIni;
+  String? pendapatanBulanIni;
   int? pelangganHariIni;
 
   InfoDashBoard(

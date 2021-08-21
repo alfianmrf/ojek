@@ -217,10 +217,10 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                     child: Text(
                       "Iya",
                       style: TextStyle(
-                        color: Color(0xFFFCCCBC),
+                        color: primaryColor,
                       ),
                     ),
-                    style: borderButtonStyle,
+                    style: borderButtonStylePrimary,
                   ),
                 ),
               ],
@@ -231,7 +231,72 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     );
   }
 
-  void _cancelOrder(int orderId) {
+  Future<void> _showMyDialogFinish(int orderId) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Center(
+            child: Text(
+              'Apakah penumpang sudah sampai tujuan ?',
+              textAlign: TextAlign.center,
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  // width: MediaQuery.of(context).size.width,
+                  // margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Tidak",
+                    ),
+                    style: flatButtonStyle,
+                  ),
+                ),
+                Container(
+                  width: 10,
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      _finishOrder(orderId);
+                    },
+                    child: Text(
+                      "Iya",
+                      style: TextStyle(
+                        color: primaryColor,
+                      ),
+                    ),
+                    style: borderButtonStylePrimary,
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
+  void _finishOrder(int orderId) async {
+    var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
+    Provider.of<DriverModel>(context, listen: false)
+        .finishOrder(auth, orderId)
+        .then((value) {
+      if (value == true) {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  void _cancelOrder(int orderId) async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
     Provider.of<DriverModel>(context, listen: false).cancelOrder(orderId, auth);
     index = 1000000;
@@ -321,7 +386,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                               Container(
                                                 width: 145,
                                                 child: Text(
-                                                  "Hari Ini : ${value.dashboardInfo.pendapatanHariIni == null ? formatCurrency.format(0) : formatCurrency.format(value.dashboardInfo.pendapatanHariIni)}",
+                                                  "Hari Ini : ${value.dashboardInfo.pendapatanHariIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanHariIni!))}",
                                                   style:
                                                       TextStyle(fontSize: 13),
                                                 ),
@@ -329,7 +394,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                               Container(
                                                 margin: EdgeInsets.only(top: 5),
                                                 child: Text(
-                                                  "Bulan Ini : ${value.dashboardInfo.pendapatanBulanIni == null ? formatCurrency.format(0) : formatCurrency.format(value.dashboardInfo.pendapatanBulanIni)}",
+                                                  "Bulan Ini : ${value.dashboardInfo.pendapatanBulanIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanBulanIni!))}",
                                                   style:
                                                       TextStyle(fontSize: 13),
                                                 ),
@@ -542,19 +607,40 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                 Container(
                                                   child: Row(
                                                     children: [
-                                                      GestureDetector(
-                                                        onTap: () {
-                                                          UIBlock.block(
-                                                              context);
-                                                          _cancelOrder(value
-                                                              .onTheWay.id);
-                                                        },
-                                                        child: Icon(
-                                                          Icons.cancel_outlined,
-                                                          color:
-                                                              Colors.redAccent,
-                                                          size: 40,
-                                                        ),
+                                                      Column(
+                                                        children: [
+                                                          Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    bottom: 5),
+                                                            child: Text(
+                                                              formatCurrency
+                                                                  .format(value
+                                                                      .onTheWay
+                                                                      .fee),
+                                                              style: TextStyle(
+                                                                color: Colors
+                                                                    .black54,
+                                                                fontSize: 14,
+                                                              ),
+                                                            ),
+                                                          ),
+                                                          GestureDetector(
+                                                            onTap: () {
+                                                              UIBlock.block(
+                                                                  context);
+                                                              _cancelOrder(value
+                                                                  .onTheWay.id);
+                                                            },
+                                                            child: Icon(
+                                                              Icons
+                                                                  .cancel_outlined,
+                                                              color: Colors
+                                                                  .redAccent,
+                                                              size: 40,
+                                                            ),
+                                                          ),
+                                                        ],
                                                       ),
                                                       Container(
                                                         width: 8,
@@ -563,6 +649,35 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                   ),
                                                 )
                                               ],
+                                            ),
+                                            Container(
+                                              margin: EdgeInsets.fromLTRB(
+                                                  10, 20, 10, 5),
+                                              width: double.infinity,
+                                              height: 35,
+                                              child: TextButton(
+                                                onPressed: () {
+                                                  _showMyDialogFinish(
+                                                      value.onTheWay.id);
+                                                },
+                                                child: Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment.center,
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.center,
+                                                  children: [
+                                                    Icon(
+                                                      Icons.check_circle,
+                                                      size: 20,
+                                                    ),
+                                                    Container(
+                                                      width: 10,
+                                                    ),
+                                                    Text("Selesaikan Pesanan"),
+                                                  ],
+                                                ),
+                                                style: flatButtonStyle,
+                                              ),
                                             )
                                           ],
                                         ),
