@@ -159,7 +159,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     var param = <String, dynamic>{
       "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
       "include_player_ids": [uuid],
-      "data": {"role": "user", "action": "$action"},
+      "data": {"role": "penumpang", "action": "$action"},
       "contents": {"en": "$message"}
     };
     var token = "MGM3NDZmMDUtM2U2ZS00YTY4LThlM2MtMmYzZGIyZDc2NDky";

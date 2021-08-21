@@ -24,9 +24,9 @@ class UserModel with ChangeNotifier {
     if (res.statusCode == 200) {
       isDriverFound = true;
       infoDriverUser = InfoDriverJemput.fromJson(decode);
-      isLoading = false;
-      notifyListeners();
     }
+    isLoading = false;
+    notifyListeners();
   }
 }
 
