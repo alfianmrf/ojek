@@ -107,6 +107,68 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
     print(json.decode(res.body));
   }
 
+  Future<void> _showMyDialogCreate() async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: Colors.white,
+          title: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  'Apakah siap untuk melakukan perjalanan ?',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            Row(
+              children: [
+                Expanded(
+                  // width: MediaQuery.of(context).size.width,
+                  // margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: Text(
+                      "Tidak",
+                    ),
+                    style: flatButtonStyle,
+                  ),
+                ),
+                Container(
+                  width: 10,
+                ),
+                Expanded(
+                  // width: MediaQuery.of(context).size.width,
+                  // margin: EdgeInsets.symmetric(horizontal: 30),
+                  child: TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      cariDriver();
+                    },
+                    child: Text(
+                      "Iya",
+                      style: TextStyle(
+                        color: Color(0xFFFCCCBC),
+                      ),
+                    ),
+                    style: borderButtonStyle,
+                  ),
+                ),
+              ],
+            )
+          ],
+        );
+      },
+    );
+  }
+
   Future<void> cariDriver() async {
     Provider.of<MapModel>(context, listen: false)
         .searchDriver(
@@ -117,6 +179,7 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
       if (value != null) {
         _sendNotifToDriver(value.driverUuid);
         print("berhasil");
+        id = value.order.id;
         print(value.driverUuid);
         Navigator.push(
           context,
@@ -329,7 +392,7 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
                                       height: 40,
                                       child: TextButton(
                                         onPressed: () {
-                                          cariDriver();
+                                          _showMyDialogCreate();
                                         },
                                         child: Text(
                                           "Cari Driver",

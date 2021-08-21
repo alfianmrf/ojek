@@ -101,7 +101,7 @@ class DriverModel with ChangeNotifier {
     return false;
   }
 
-  Future<void> cancelOrder(int orderId, String token) async {
+  Future<bool> cancelOrder(int orderId, String token) async {
     var param = <String, dynamic>{"order_id": orderId};
 
     var res = await http.post(Uri.parse(cancelOrderDriverURL),
@@ -115,7 +115,9 @@ class DriverModel with ChangeNotifier {
       // getListPenumpang(token);
       getListOrderNow(token);
       notifyListeners();
+      return true;
     }
+    return false;
   }
 
   Future<void> Dashboard(token) async {

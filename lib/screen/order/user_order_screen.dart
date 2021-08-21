@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:ojek/common/variable.dart';
+import 'package:ojek/model/driver_map_model.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/screen/home/home_user.dart';
@@ -46,6 +47,17 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
         .setNotificationOpenedHandler((OSNotificationOpenedResult result) {
       print("ketika di klik");
       // Will be called whenever a notification is opened/button pressed.
+    });
+  }
+
+  void _cancelOrder() async {
+    var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
+    Provider.of<DriverModel>(context, listen: false)
+        .cancelOrder(id!, auth)
+        .then((value) {
+      if (value == true) {
+        Navigator.pop(context);
+      }
     });
   }
 
@@ -90,7 +102,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
                   TextButton(
                     style: borderButtonStyle,
                     onPressed: () {
-                      Navigator.pop(context);
+                      _cancelOrder();
                     },
                     child: Text(
                       "Batalkan",

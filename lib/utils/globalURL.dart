@@ -7,7 +7,7 @@ var registerURL = mainURL + "auth/register";
 //----------------------------------------------------------------------------- USER
 
 var searchDriverURL = mainURL + "order/create";
-var infoDriverURL = "order/driver";
+var infoDriverURL = mainURL +"order/driver";
 
 //----------------------------------------------------------------------------- Driver
 

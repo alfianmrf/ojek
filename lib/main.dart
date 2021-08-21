@@ -4,6 +4,7 @@ import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/model/notification.dart';
 import 'package:ojek/model/searc_map.dart';
+import 'package:ojek/model/user_model.dart';
 import 'package:ojek/screen/splash_screen.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
@@ -26,6 +27,7 @@ void main() {
       ChangeNotifierProvider(create: (context) => MapModel()),
       ChangeNotifierProvider(create: (context) => DriverModel()),
       ChangeNotifierProvider(create: (context) => NotificationDriver()),
+      ChangeNotifierProvider(create: (context) => UserModel()),
     ],
     child: Phoenix(
       child: MyApp(),
