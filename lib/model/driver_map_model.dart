@@ -101,7 +101,7 @@ class DriverModel with ChangeNotifier {
     return false;
   }
 
-  Future<bool> cancelOrder(int orderId, String token) async {
+  Future<bool> cancelOrder(int orderId, String token, bool isUser) async {
     var param = <String, dynamic>{"order_id": orderId};
 
     var res = await http.post(Uri.parse(cancelOrderDriverURL),
@@ -113,7 +113,9 @@ class DriverModel with ChangeNotifier {
     print(json.decode(res.body));
     if (res.statusCode == 200) {
       // getListPenumpang(token);
-      getListOrderNow(token);
+      if (isUser != true) {
+        getListOrderNow(token);
+      }
       notifyListeners();
       return true;
     }

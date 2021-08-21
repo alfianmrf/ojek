@@ -298,7 +298,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
 
   void _cancelOrder(int orderId) async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
-    Provider.of<DriverModel>(context, listen: false).cancelOrder(orderId, auth);
+    Provider.of<DriverModel>(context, listen: false).cancelOrder(orderId, auth,false);
     index = 1000000;
     setState(() {
       list = [];

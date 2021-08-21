@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ojek/model/driver_map_model.dart';
+import 'package:ojek/model/get_order.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
 import 'package:ojek/model/notification.dart';

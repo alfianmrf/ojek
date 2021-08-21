@@ -12,6 +12,7 @@ class MapModel with ChangeNotifier {
   late double pickupLong = 0;
   late double destinationLat = 0;
   late double destinationLong = 0;
+  List<String>? uuidDriver;
 
   Future<GetOrderUser?> searchDriver(
       String token, String address, int price) async {
@@ -41,6 +42,7 @@ class MapModel with ChangeNotifier {
     if (res.statusCode == 200) {
       result = GetOrderUser.fromJson(decode);
       print(result);
+      uuidDriver = result.driverUuid;
       notifyListeners();
       return result;
     }

@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +10,13 @@ import 'package:ojek/common/variable.dart';
 import 'package:ojek/model/driver_map_model.dart';
 import 'package:ojek/model/map_model.dart';
 import 'package:ojek/model/model.dart';
+import 'package:ojek/model/user_model.dart';
 import 'package:ojek/screen/home/home_user.dart';
 import 'package:ojek/screen/theme.dart';
+import 'package:ojek/utils/globalURL.dart';
 import 'package:onesignal_flutter/onesignal_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 
 class UserOrderScreen extends StatefulWidget {
   const UserOrderScreen({Key? key}) : super(key: key);
@@ -22,7 +26,6 @@ class UserOrderScreen extends StatefulWidget {
 }
 
 class _UserOrderScreenState extends State<UserOrderScreen> {
-  @override
   @override
   void initState() {
     super.initState();
@@ -53,12 +56,33 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
   void _cancelOrder() async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
     Provider.of<DriverModel>(context, listen: false)
-        .cancelOrder(id!, auth)
+        .cancelOrder(id!, auth, true)
         .then((value) {
       if (value == true) {
         Navigator.pop(context);
+        _sendNotifToDriver(
+            Provider.of<MapModel>(context, listen: false).uuidDriver!);
       }
     });
+  }
+
+  void _sendNotifToDriver(List<String> uuid) async {
+    var param = <String, dynamic>{
+      "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
+      "include_player_ids": uuid,
+      "data": {"role": "driver", "action": "batal"},
+      "contents": {"en": "User membatalkan pesanan"}
+    };
+    print(json.encode(param));
+    var token = "MGM3NDZmMDUtM2U2ZS00YTY4LThlM2MtMmYzZGIyZDc2NDky";
+    var res = await http.post(Uri.parse(sendNotificationOrderURL),
+        headers: {
+          HttpHeaders.contentTypeHeader: 'application/json',
+          HttpHeaders.authorizationHeader: 'Bearer $token'
+        },
+        body: json.encode(param));
+    print(json.decode(res.body));
+    Provider.of<MapModel>(context).uuidDriver = [];
   }
 
   Widget build(BuildContext context) {

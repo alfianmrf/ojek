@@ -81,10 +81,13 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
         pickup.destinationLat,
         pickup.destinationLong);
     String biaya = price.toString();
+    print(price);
     setState(() {
-      ongkir = int.parse(biaya[0]) * 3000;
-      if (int.parse(biaya[0]) < 2) {
+      ongkir = int.parse(biaya[0]) * 5000;
+      if (price < 1500) {
         ongkir = 5000;
+      } else if (price > 1500 && price < 2000) {
+        ongkir = 10000;
       }
     });
   }
@@ -194,14 +197,6 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
         ScaffoldMessenger.of(context).showSnackBar(snackbar);
       }
     });
-  }
-
-  void _getDistance() async {
-    var res = await http.get(
-      Uri.parse(
-          "https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=40.6655101,-73.89188969999998&destinations=40.6905615%2C,-73.9976592&key=AIzaSyAvEY0wfdWGDfxEfXHjC8O0EyWVSzTqd9w"),
-    );
-    print(json.encode(res.body));
   }
 
   Widget build(BuildContext context) {
@@ -371,7 +366,6 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
                                 child: TextButton(
                                   onPressed: () {
                                     setState(() {
-                                      _getDistance();
                                       _getCurrentLocation();
                                     });
                                   },
