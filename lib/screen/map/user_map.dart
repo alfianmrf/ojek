@@ -112,7 +112,7 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
         .searchDriver(
             Provider.of<AppModel>(context, listen: false).auth!.accessToken,
             alamatDestinasi.text,
-            ongkir!)
+            ongkir)
         .then((value) {
       if (value != null) {
         _sendNotifToDriver(value.driverUuid);

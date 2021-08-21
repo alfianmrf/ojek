@@ -78,6 +78,8 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     });
   }
 
+  void _getDashBoardInfo() async {}
+
   void _getListOrderan() async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
     Provider.of<DriverModel>(context, listen: false)
@@ -107,7 +109,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
       if (value == true) {
         UIBlock.unblock(context);
 
-        // _sendNotifToUser(uuid);
+        _sendNotifToUser(uuid);
         setState(() {
           list = [];
         });
@@ -317,8 +319,9 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                 CrossAxisAlignment.start,
                                             children: [
                                               Container(
+                                                width: 145,
                                                 child: Text(
-                                                  "Hari Ini : Rp. 1.000.000",
+                                                  "Hari Ini : ${value.dashboardInfo.pendapatanHariIni == null ? formatCurrency.format(0) : formatCurrency.format(value.dashboardInfo.pendapatanHariIni)}",
                                                   style:
                                                       TextStyle(fontSize: 13),
                                                 ),
@@ -326,7 +329,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                               Container(
                                                 margin: EdgeInsets.only(top: 5),
                                                 child: Text(
-                                                  "Bulan Ini : Rp. 1.000.000",
+                                                  "Bulan Ini : ${value.dashboardInfo.pendapatanBulanIni == null ? formatCurrency.format(0) : formatCurrency.format(value.dashboardInfo.pendapatanBulanIni)}",
                                                   style:
                                                       TextStyle(fontSize: 13),
                                                 ),
@@ -356,7 +359,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                               Container(
                                                 margin: EdgeInsets.only(top: 5),
                                                 child: Text(
-                                                  "6 Penumpang",
+                                                  "${value.dashboardInfo.pelangganHariIni} Penumpang",
                                                   style: TextStyle(
                                                       fontWeight:
                                                           FontWeight.bold,

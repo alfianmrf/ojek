@@ -9,11 +9,13 @@ import 'package:ojek/utils/globalURL.dart';
 class DriverModel with ChangeNotifier {
   late List<ListPenumpang> listPenumpang = [];
   late ListPenumpang onTheWay;
+  late InfoDashBoard dashboardInfo;
 
   late bool isLoading = true;
   late bool isOnTheWay = false;
 
   Future<MessageResult> getListOrderNow(String token) async {
+    Dashboard(token);
     var message = MessageResult(
         status: 500, message: "Maaf, ada Kesalahan Server", driverUuid: []);
     var res = await http.get(Uri.parse(currentOrderURL), headers: {
@@ -30,6 +32,7 @@ class DriverModel with ChangeNotifier {
       onTheWay = ListPenumpang.fromJson(decode);
       message = MessageResult(
           status: res.statusCode, message: "Ada Orderan", driverUuid: []);
+      isLoading = false;
       notifyListeners();
       return message;
     }
@@ -97,6 +100,22 @@ class DriverModel with ChangeNotifier {
       notifyListeners();
     }
   }
+
+  Future<void> Dashboard(token) async {
+    var res = await http.get(
+      Uri.parse(dashboardURL),
+      headers: {
+        HttpHeaders.contentTypeHeader: 'application/json',
+        HttpHeaders.authorizationHeader: 'Bearer $token'
+      },
+    );
+    var decode = json.decode(res.body);
+    if (res.statusCode == 200) {
+      dashboardInfo = InfoDashBoard.fromJson(decode);
+    }
+    print(json.encode(dashboardInfo));
+    notifyListeners();
+  }
 }
 
 class ListPenumpang {
@@ -160,6 +179,29 @@ class ListPenumpang {
     // data['status'] = this.status;
     data['created_at'] = this.createdAt;
     data['updated_at'] = this.updatedAt;
+    return data;
+  }
+}
+
+class InfoDashBoard {
+  int? pendapatanHariIni;
+  int? pendapatanBulanIni;
+  int? pelangganHariIni;
+
+  InfoDashBoard(
+      {this.pendapatanHariIni, this.pendapatanBulanIni, this.pelangganHariIni});
+
+  InfoDashBoard.fromJson(Map<String, dynamic> json) {
+    pendapatanHariIni = json['pendapatan_hari_ini'];
+    pendapatanBulanIni = json['pendapatan_bulan_ini'];
+    pelangganHariIni = json['pelanggan_hari_ini'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['pendapatan_hari_ini'] = this.pendapatanHariIni;
+    data['pendapatan_bulan_ini'] = this.pendapatanBulanIni;
+    data['pelanggan_hari_ini'] = this.pelangganHariIni;
     return data;
   }
 }
