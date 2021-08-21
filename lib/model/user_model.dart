@@ -6,10 +6,12 @@ import 'package:http/http.dart' as http;
 import 'package:ojek/utils/globalURL.dart';
 
 class UserModel with ChangeNotifier {
-  late InfoDriverJemput infoDriverUser;
+  InfoDriverJemput? infoDriverUser;
   bool isLoading = true;
+  bool isDriverFound = false;
 
   Future<void> infoDriver(String token) async {
+    isDriverFound = false;
     var res = await http.get(Uri.parse(infoDriverURL), headers: {
       HttpHeaders.contentTypeHeader: 'application/json',
       HttpHeaders.authorizationHeader: 'Bearer $token'
@@ -18,7 +20,9 @@ class UserModel with ChangeNotifier {
     var decode = json.decode(res.body);
 
     print(decode);
+
     if (res.statusCode == 200) {
+      isDriverFound = true;
       infoDriverUser = InfoDriverJemput.fromJson(decode);
       isLoading = false;
       notifyListeners();

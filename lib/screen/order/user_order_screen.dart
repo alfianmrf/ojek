@@ -37,6 +37,7 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
       var data = event.notification.additionalData;
       if (data!['role'] ==
           Provider.of<AppModel>(context, listen: false).auth!.role) {
+        _getInfoDriver();
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeUserScreen()));
       }
@@ -60,10 +61,16 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
         .then((value) {
       if (value == true) {
         Navigator.pop(context);
+        _getInfoDriver();
         _sendNotifToDriver(
             Provider.of<MapModel>(context, listen: false).uuidDriver!);
       }
     });
+  }
+
+  void _getInfoDriver() async {
+    var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
+    Provider.of<UserModel>(context, listen: false).infoDriver(auth);
   }
 
   void _sendNotifToDriver(List<String> uuid) async {

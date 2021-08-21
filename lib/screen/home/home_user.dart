@@ -288,174 +288,200 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                         ],
                       ),
                     ),
-                    Container(
-                      margin: EdgeInsets.only(top: 20, left: 15),
-                      child: Text(
-                        "Detail Perjalanan",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF616161)),
-                      ),
-                    ),
-                    Container(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 14, vertical: 20),
-                      padding: EdgeInsets.all(10),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        boxShadow: [
-                          BoxShadow(
-                            offset: Offset(5, 3),
-                            blurRadius: 7,
-                            color: Color(0xFFFCCCBC).withOpacity(0.30),
+                    value.isDriverFound != true
+                        ? Container()
+                        : Container(
+                            margin: EdgeInsets.only(top: 20, left: 15),
+                            child: Text(
+                              "Detail Perjalanan",
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Color(0xFF616161)),
+                            ),
                           ),
-                        ],
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                user.auth!.name,
-                                style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                              Text(
-                                "Total : ${formatCurrency.format(value.infoDriverUser.fee)}",
-                                style: TextStyle(
-                                    color: Colors.black45,
-                                    fontSize: 15,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ],
-                          ),
-                          Divider(
-                            color: Colors.black.withOpacity(0.24),
-                          ),
-                          Row(
-                            children: [
-                              Container(
-                                margin: EdgeInsets.only(right: 10),
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10),
-                                  ),
+                    value.isDriverFound != true
+                        ? Center(
+                            child: Container(
+                            margin: EdgeInsets.only(top: 30),
+                            padding: EdgeInsets.fromLTRB(90, 14, 90, 14),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                  'assets/images/notfound.png',
                                 ),
-                                child: ClipRRect(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10),
-                                    ),
-                                    child: Image.asset(
-                                        'assets/images/logoNoBackground.png')),
+                                Text(
+                                  "Tidak ada pesanan",
+                                  style: TextStyle(
+                                      color: Colors.black45,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ],
+                            ),
+                          ))
+                        : Container(
+                            margin: EdgeInsets.symmetric(
+                                horizontal: 14, vertical: 20),
+                            padding: EdgeInsets.all(10),
+                            width: double.infinity,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: [
+                                BoxShadow(
+                                  offset: Offset(5, 3),
+                                  blurRadius: 7,
+                                  color: Color(0xFFFCCCBC).withOpacity(0.30),
+                                ),
+                              ],
+                              borderRadius: BorderRadius.all(
+                                Radius.circular(10),
                               ),
-                              Container(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: Container(
-                                        width: 230,
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "Nama Driver : ",
-                                              style: TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              value.infoDriverUser.name!,
-                                              style: TextStyle(
-                                                color: Colors.black45,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
+                                    Text(
+                                      user.auth!.name,
+                                      style: TextStyle(
+                                          color: Colors.black45,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    Text(
+                                      "Total : ${formatCurrency.format(value.infoDriverUser!.fee)}",
+                                      style: TextStyle(
+                                          color: Colors.black45,
+                                          fontSize: 15,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                Divider(
+                                  color: Colors.black.withOpacity(0.24),
+                                ),
+                                Row(
+                                  children: [
+                                    Container(
+                                      margin: EdgeInsets.only(right: 10),
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
                                         ),
                                       ),
+                                      child: ClipRRect(
+                                          borderRadius: BorderRadius.all(
+                                            Radius.circular(10),
+                                          ),
+                                          child: Image.asset(
+                                              'assets/images/logoNoBackground.png')),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: Row(
+                                    Container(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "Plat Nomor : ",
-                                            style: TextStyle(
-                                              color: Colors.black54,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.bold,
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5),
+                                            child: Container(
+                                              width: 230,
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    "Nama Driver : ",
+                                                    style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    value.infoDriverUser!.name!,
+                                                    style: TextStyle(
+                                                      color: Colors.black45,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
                                             ),
                                           ),
-                                          Text(
-                                            value
-                                                .infoDriverUser.nomorKendaraan!,
-                                            style: TextStyle(
-                                              color: Colors.black45,
-                                              fontSize: 12,
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5),
+                                            child: Row(
+                                              children: [
+                                                Text(
+                                                  "Plat Nomor : ",
+                                                  style: TextStyle(
+                                                    color: Colors.black54,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  value.infoDriverUser!
+                                                      .nomorKendaraan!,
+                                                  style: TextStyle(
+                                                    color: Colors.black45,
+                                                    fontSize: 12,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
+                                          Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                vertical: 5),
+                                            child: Container(
+                                              width: 230,
+                                              child: Row(
+                                                children: [
+                                                  Text(
+                                                    "Alamat Tujuan : ",
+                                                    style: TextStyle(
+                                                        color: Colors.black54,
+                                                        fontSize: 12,
+                                                        fontWeight:
+                                                            FontWeight.bold),
+                                                  ),
+                                                  Text(
+                                                    "Jawa Timur Park",
+                                                    style: TextStyle(
+                                                      color: Colors.black45,
+                                                      fontSize: 12,
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          // TextButton(
+                                          //   onPressed: () {
+                                          //     Navigator.push(
+                                          //       context,
+                                          //       MaterialPageRoute(
+                                          //         builder: (context) => HomeDriverScreen(),
+                                          //       ),
+                                          //     );
+                                          //   },
+                                          //   child: Text("driver"),
+                                          //   style: flatButtonStyle,
+                                          // )
                                         ],
                                       ),
                                     ),
-                                    Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 5),
-                                      child: Container(
-                                        width: 230,
-                                        child: Row(
-                                          children: [
-                                            Text(
-                                              "Alamat Tujuan : ",
-                                              style: TextStyle(
-                                                  color: Colors.black54,
-                                                  fontSize: 12,
-                                                  fontWeight: FontWeight.bold),
-                                            ),
-                                            Text(
-                                              "Jawa Timur Park",
-                                              style: TextStyle(
-                                                color: Colors.black45,
-                                                fontSize: 12,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    // TextButton(
-                                    //   onPressed: () {
-                                    //     Navigator.push(
-                                    //       context,
-                                    //       MaterialPageRoute(
-                                    //         builder: (context) => HomeDriverScreen(),
-                                    //       ),
-                                    //     );
-                                    //   },
-                                    //   child: Text("driver"),
-                                    //   style: flatButtonStyle,
-                                    // )
                                   ],
-                                ),
-                              ),
-                            ],
-                          )
-                        ],
-                      ),
-                    ),
+                                )
+                              ],
+                            ),
+                          ),
                   ],
                 );
         },

@@ -109,7 +109,8 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
       if (value == true) {
         UIBlock.unblock(context);
 
-        _sendNotifToUser(uuid);
+        _sendNotifToUser(
+            uuid, "Driver sedang menuju ke tempat kamu nih.", "sukses");
         setState(() {
           list = [];
         });
@@ -154,12 +155,12 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     });
   }
 
-  void _sendNotifToUser(String uuid) async {
+  void _sendNotifToUser(String uuid, String message, String action) async {
     var param = <String, dynamic>{
       "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
       "include_player_ids": [uuid],
-      "data": {"role": "user"},
-      "contents": {"en": "Driver sedang menuju ke tempat kamu nih."}
+      "data": {"role": "user", "action": "$action"},
+      "contents": {"en": "$message"}
     };
     var token = "MGM3NDZmMDUtM2U2ZS00YTY4LThlM2MtMmYzZGIyZDc2NDky";
     var res = await http.post(Uri.parse(sendNotificationOrderURL),
@@ -296,14 +297,17 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     });
   }
 
-  void _cancelOrder(int orderId) async {
+  void _cancelOrder(int orderId, String uuid) async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
-    Provider.of<DriverModel>(context, listen: false).cancelOrder(orderId, auth,false);
+    Provider.of<DriverModel>(context, listen: false)
+        .cancelOrder(orderId, auth, false);
     index = 1000000;
     setState(() {
       list = [];
       _markers.clear();
     });
+    _sendNotifToUser(uuid, "Driver membatalkan pesanan", "sukses");
+
     UIBlock.unblock(context);
   }
 
@@ -629,8 +633,11 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                             onTap: () {
                                                               UIBlock.block(
                                                                   context);
-                                                              _cancelOrder(value
-                                                                  .onTheWay.id);
+                                                              _cancelOrder(
+                                                                  value.onTheWay
+                                                                      .id,
+                                                                  value.onTheWay
+                                                                      .uuid);
                                                             },
                                                             child: Icon(
                                                               Icons
