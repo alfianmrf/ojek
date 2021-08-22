@@ -95,7 +95,7 @@ class _UserLocationScreenState extends State<UserLocationScreen> {
   void _sendNotifToDriver(List<String> uuid) async {
     var param = <String, dynamic>{
       "app_id": "302fc91f-1847-4650-9a8d-40d872fee45d",
-      "include_player_ids": ["5bf2559b-1756-4794-9096-94d806f8695c"],
+      "include_player_ids": uuid,
       "data": {"role": "driver"},
       "contents": {"en": "Ada orderan baru masuk"}
     };

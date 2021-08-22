@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:ojek/common/variable.dart';
@@ -17,6 +18,7 @@ import 'package:http/http.dart' as http;
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:intl/intl.dart';
 import 'package:uiblock/uiblock.dart';
+import 'package:pull_to_refresh/pull_to_refresh.dart';
 
 import '../theme.dart';
 
@@ -35,6 +37,30 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
   int? index;
   final List<Marker> _markers = [];
   List<Marker> list = [];
+
+  RefreshController _refreshController =
+      RefreshController(initialRefresh: false);
+
+  void _onRefresh() async {
+    // monitor network fetch
+    // await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use refreshFailed()
+    var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
+    Provider.of<DriverModel>(context, listen: false)
+        .getListOrderNow(auth)
+        .then((value) {
+      print(value.status);
+      _refreshController.refreshCompleted();
+    });
+  }
+
+  void _onLoading() async {
+    // monitor network fetch
+    await Future.delayed(Duration(milliseconds: 1000));
+    // if failed,use loadFailed(),if no data return,use LoadNodata()
+    if (mounted) setState(() {});
+    _refreshController.loadComplete();
+  }
 
   final ButtonStyle flatButtonStyle = TextButton.styleFrom(
     primary: Colors.white,
@@ -78,26 +104,12 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     });
   }
 
-  void _getDashBoardInfo() async {}
-
   void _getListOrderan() async {
     var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
     Provider.of<DriverModel>(context, listen: false)
         .getListOrderNow(auth)
         .then((value) {
       print(value.status);
-    });
-  }
-
-  void _getListPenumpang() async {
-    var auth = Provider.of<AppModel>(context, listen: false).auth!.accessToken;
-    Provider.of<DriverModel>(context, listen: false).listPenumpang = [];
-    Provider.of<DriverModel>(context, listen: false)
-        .getListPenumpang(auth)
-        .then((value) {
-      if (value.status == 200) {
-        _getUserLocation();
-      }
     });
   }
 
@@ -316,403 +328,259 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
     return new WillPopScope(
       onWillPop: () async => false,
       child: Scaffold(
-        body: Consumer<DriverModel>(
-          builder: (context, value, child) {
-            return value.isLoading
-                ? spinkit
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          width: double.infinity,
-                          height: 260,
-                          // color: Colors.red,
-                          child: Stack(
-                            children: [
-                              Container(
-                                decoration: BoxDecoration(
-                                  color: primaryColor,
-                                  borderRadius: BorderRadius.only(
-                                    bottomRight: Radius.circular(60),
-                                  ),
-                                ),
-                                width: double.infinity,
-                                height: 210,
-                              ),
-                              Positioned(
-                                bottom: 0,
-                                right: 0,
-                                left: 0,
-                                child: Container(
-                                  height: 120,
-                                  width: double.infinity,
-                                  margin: EdgeInsets.symmetric(horizontal: 40),
-                                  padding: EdgeInsets.only(top: 10),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 7,
-                                        color: primaryColor.withOpacity(0.40),
+        backgroundColor: primaryColor,
+        body: SmartRefresher(
+          enablePullDown: true,
+          enablePullUp: true,
+          header: WaterDropHeader(),
+          footer: CustomFooter(
+            builder: (BuildContext context, LoadStatus? mode) {
+              Widget body;
+              if (mode == LoadStatus.idle) {
+                body = Text("pull up load");
+              } else if (mode == LoadStatus.loading) {
+                body = CupertinoActivityIndicator();
+              } else if (mode == LoadStatus.failed) {
+                body = Text("Load Failed!Click retry!");
+              } else if (mode == LoadStatus.canLoading) {
+                body = Text("release to load more");
+              } else {
+                body = Text("No more Data");
+              }
+              return Container(
+                height: 55.0,
+                child: Center(child: body),
+              );
+            },
+          ),
+          controller: _refreshController,
+          onRefresh: _onRefresh,
+          onLoading: _onLoading,
+          child: Consumer<DriverModel>(
+            builder: (context, value, child) {
+              return value.isLoading
+                  ? spinkitblue
+                  : SingleChildScrollView(
+                      child: Container(
+                        color: Colors.white,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              width: double.infinity,
+                              height: 260,
+                              // color: Colors.red,
+                              child: Stack(
+                                children: [
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: primaryColor,
+                                      borderRadius: BorderRadius.only(
+                                        bottomRight: Radius.circular(60),
                                       ),
-                                    ],
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(10),
                                     ),
+                                    width: double.infinity,
+                                    height: 210,
                                   ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Container(
-                                        margin:
-                                            EdgeInsets.fromLTRB(14, 10, 14, 8),
-                                        child: Text(
-                                          "Penghasilan :",
-                                          style: TextStyle(
-                                              fontWeight: FontWeight.bold),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    left: 0,
+                                    child: Container(
+                                      height: 120,
+                                      width: double.infinity,
+                                      margin:
+                                          EdgeInsets.symmetric(horizontal: 40),
+                                      padding: EdgeInsets.only(top: 10),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white,
+                                        boxShadow: [
+                                          BoxShadow(
+                                            blurRadius: 7,
+                                            color:
+                                                primaryColor.withOpacity(0.40),
+                                          ),
+                                        ],
+                                        borderRadius: BorderRadius.all(
+                                          Radius.circular(10),
                                         ),
                                       ),
-                                      Container(
-                                        margin: EdgeInsets.symmetric(
-                                            horizontal: 14),
-                                        child: Divider(
-                                          color: Colors.black38,
-                                        ),
-                                      ),
-                                      Container(
-                                        margin:
-                                            EdgeInsets.fromLTRB(14, 8, 14, 14),
-                                        child: Row(
-                                          children: [
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: 145,
-                                                  child: Text(
-                                                    "Hari Ini : ${value.dashboardInfo.pendapatanHariIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanHariIni!))}",
-                                                    style:
-                                                        TextStyle(fontSize: 13),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 5),
-                                                  child: Text(
-                                                    "Bulan Ini : ${value.dashboardInfo.pendapatanBulanIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanBulanIni!))}",
-                                                    style:
-                                                        TextStyle(fontSize: 13),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            Container(
-                                              margin: EdgeInsets.symmetric(
-                                                  horizontal: 10),
-                                              width: 1,
-                                              color: Colors.black26,
-                                              height: 30,
-                                            ),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  child: Text(
-                                                    "Hari ini :",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13),
-                                                  ),
-                                                ),
-                                                Container(
-                                                  margin:
-                                                      EdgeInsets.only(top: 5),
-                                                  child: Text(
-                                                    "${value.dashboardInfo.pelangganHariIni} Penumpang",
-                                                    style: TextStyle(
-                                                        fontWeight:
-                                                            FontWeight.bold,
-                                                        fontSize: 13),
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              Container(
-                                margin: EdgeInsets.symmetric(
-                                    vertical: 70, horizontal: 20),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    ImageIcon(
-                                      AssetImage(
-                                          'assets/images/healthicons_truck-driver.png'),
-                                      size: 60,
-                                      color: Colors.black45,
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          10, 17, 0, 0),
                                       child: Column(
                                         crossAxisAlignment:
                                             CrossAxisAlignment.start,
                                         children: [
-                                          Text(
-                                            "Hi, Driver",
-                                            style: TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black45,
-                                                fontSize: 17),
-                                          ),
-                                          Text(
-                                            Provider.of<AppModel>(context)
-                                                .auth!
-                                                .name,
-                                            style: TextStyle(
-                                                color: Colors.black45,
-                                                fontSize: 12),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                    Spacer(),
-                                    Padding(
-                                      padding: const EdgeInsets.fromLTRB(
-                                          0, 17, 0, 0),
-                                      child: Row(
-                                        children: [
-                                          Icon(
-                                            Icons.logout_outlined,
-                                            size: 30,
-                                            color: Colors.black45,
-                                          ),
-                                          GestureDetector(
-                                            onTap: () {
-                                              _showMyDialogLogOut();
-                                            },
+                                          Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                14, 10, 14, 8),
                                             child: Text(
-                                              "Log Out",
+                                              "Penghasilan :",
                                               style: TextStyle(
-                                                  color: Colors.black45,
-                                                  fontSize: 12,
                                                   fontWeight: FontWeight.bold),
                                             ),
                                           ),
+                                          Container(
+                                            margin: EdgeInsets.symmetric(
+                                                horizontal: 14),
+                                            child: Divider(
+                                              color: Colors.black38,
+                                            ),
+                                          ),
+                                          Container(
+                                            margin: EdgeInsets.fromLTRB(
+                                                14, 8, 14, 14),
+                                            child: Row(
+                                              children: [
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      width: 145,
+                                                      child: Text(
+                                                        "Hari Ini : ${value.dashboardInfo.pendapatanHariIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanHariIni!))}",
+                                                        style: TextStyle(
+                                                            fontSize: 13),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: 5),
+                                                      child: Text(
+                                                        "Bulan Ini : ${value.dashboardInfo.pendapatanBulanIni == null ? formatCurrency.format(0) : formatCurrency.format(int.parse(value.dashboardInfo.pendapatanBulanIni!))}",
+                                                        style: TextStyle(
+                                                            fontSize: 13),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.symmetric(
+                                                      horizontal: 10),
+                                                  width: 1,
+                                                  color: Colors.black26,
+                                                  height: 30,
+                                                ),
+                                                Column(
+                                                  crossAxisAlignment:
+                                                      CrossAxisAlignment.start,
+                                                  children: [
+                                                    Container(
+                                                      child: Text(
+                                                        "Hari ini :",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13),
+                                                      ),
+                                                    ),
+                                                    Container(
+                                                      margin: EdgeInsets.only(
+                                                          top: 5),
+                                                      child: Text(
+                                                        "${value.dashboardInfo.pelangganHariIni} Penumpang",
+                                                        style: TextStyle(
+                                                            fontWeight:
+                                                                FontWeight.bold,
+                                                            fontSize: 13),
+                                                      ),
+                                                    ),
+                                                  ],
+                                                )
+                                              ],
+                                            ),
+                                          )
                                         ],
                                       ),
-                                    )
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Container(
-                          margin: EdgeInsets.only(top: 20, left: 15),
-                          child: Text(
-                            value.isOnTheWay
-                                ? "Order Sedang Berjalan "
-                                : "Order Masuk :",
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Color(0xFF616161)),
-                          ),
-                        ),
-                        Container(
-                          child: Column(
-                            children: [
-                              value.isOnTheWay
-                                  ? GestureDetector(
-                                      onTap: () {
-                                        _getPenumpangByIndex();
-                                      },
-                                      child: Container(
-                                        margin:
-                                            EdgeInsets.fromLTRB(14, 10, 14, 10),
-                                        padding: EdgeInsets.all(10),
-                                        width: double.infinity,
-                                        decoration: BoxDecoration(
-                                          color: Colors.white,
-                                          boxShadow: [
-                                            BoxShadow(
-                                              offset: Offset(5, 3),
-                                              blurRadius: 3,
-                                              color: primaryColor
-                                                  .withOpacity(0.18),
-                                            ),
-                                          ],
-                                          borderRadius: BorderRadius.all(
-                                            Radius.circular(10),
-                                          ),
+                                    ),
+                                  ),
+                                  Container(
+                                    margin: EdgeInsets.symmetric(
+                                        vertical: 70, horizontal: 20),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        ImageIcon(
+                                          AssetImage(
+                                              'assets/images/healthicons_truck-driver.png'),
+                                          size: 60,
+                                          color: Colors.black45,
                                         ),
-                                        child: Container(
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              10, 17, 0, 0),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.start,
                                             children: [
-                                              Row(
-                                                children: [
-                                                  Icon(
-                                                    Icons
-                                                        .account_circle_rounded,
-                                                    size: 50,
-                                                    color: Colors.black45
-                                                        .withOpacity(0.12),
-                                                  ),
-                                                  Container(
-                                                    margin: EdgeInsets.only(
-                                                        left: 10),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                      .symmetric(
-                                                                  vertical: 5),
-                                                          child: Container(
-                                                            width: 150,
-                                                            child: Text(
-                                                              value.onTheWay
-                                                                  .costumerName,
-                                                              style: TextStyle(
-                                                                  color: Colors
-                                                                      .black54,
-                                                                  fontSize: 18,
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .bold),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Container(
-                                                          width: 150,
-                                                          child: Text(
-                                                            value.onTheWay
-                                                                .destinationAddress,
-                                                            style: TextStyle(
-                                                              color: Colors
-                                                                  .black54,
-                                                              fontSize: 12,
-                                                            ),
-                                                          ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                  Spacer(),
-                                                  Container(
-                                                    child: Row(
-                                                      children: [
-                                                        Column(
-                                                          children: [
-                                                            Container(
-                                                              margin: EdgeInsets
-                                                                  .only(
-                                                                      bottom:
-                                                                          5),
-                                                              child: Text(
-                                                                formatCurrency
-                                                                    .format(value
-                                                                        .onTheWay
-                                                                        .fee),
-                                                                style:
-                                                                    TextStyle(
-                                                                  color: Colors
-                                                                      .black54,
-                                                                  fontSize: 14,
-                                                                ),
-                                                              ),
-                                                            ),
-                                                            GestureDetector(
-                                                              onTap: () {
-                                                                UIBlock.block(
-                                                                    context);
-                                                                _cancelOrder(
-                                                                    value
-                                                                        .onTheWay
-                                                                        .id,
-                                                                    value
-                                                                        .onTheWay
-                                                                        .uuid);
-                                                              },
-                                                              child: Icon(
-                                                                Icons
-                                                                    .cancel_outlined,
-                                                                color: Colors
-                                                                    .redAccent,
-                                                                size: 40,
-                                                              ),
-                                                            ),
-                                                          ],
-                                                        ),
-                                                        Container(
-                                                          width: 8,
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                ],
+                                              Text(
+                                                "Hi, Driver",
+                                                style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: Colors.black45,
+                                                    fontSize: 17),
                                               ),
-                                              Container(
-                                                margin: EdgeInsets.fromLTRB(
-                                                    10, 20, 10, 5),
-                                                width: double.infinity,
-                                                height: 35,
-                                                child: TextButton(
-                                                  onPressed: () {
-                                                    _showMyDialogFinish(
-                                                        value.onTheWay.id);
-                                                  },
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    crossAxisAlignment:
-                                                        CrossAxisAlignment
-                                                            .center,
-                                                    children: [
-                                                      Icon(
-                                                        Icons.check_circle,
-                                                        size: 20,
-                                                      ),
-                                                      Container(
-                                                        width: 10,
-                                                      ),
-                                                      Text(
-                                                          "Selesaikan Pesanan"),
-                                                    ],
-                                                  ),
-                                                  style: flatButtonStyle,
-                                                ),
-                                              )
+                                              Text(
+                                                Provider.of<AppModel>(context)
+                                                    .auth!
+                                                    .name,
+                                                style: TextStyle(
+                                                    color: Colors.black45,
+                                                    fontSize: 12),
+                                              ),
                                             ],
                                           ),
                                         ),
-                                      ),
-                                    )
-                                  : ListView.builder(
-                                      shrinkWrap: true,
-                                      physics: NeverScrollableScrollPhysics(),
-                                      itemCount: value.listPenumpang.length,
-                                      itemBuilder:
-                                          (BuildContext context, int i) {
-                                        return GestureDetector(
+                                        Spacer(),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(
+                                              0, 17, 0, 0),
+                                          child: Row(
+                                            children: [
+                                              Icon(
+                                                Icons.logout_outlined,
+                                                size: 30,
+                                                color: Colors.black45,
+                                              ),
+                                              GestureDetector(
+                                                onTap: () {
+                                                  _showMyDialogLogOut();
+                                                },
+                                                child: Text(
+                                                  "Log Out",
+                                                  style: TextStyle(
+                                                      color: Colors.black45,
+                                                      fontSize: 12,
+                                                      fontWeight:
+                                                          FontWeight.bold),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Container(
+                              margin: EdgeInsets.only(top: 20, left: 15),
+                              child: Text(
+                                value.isOnTheWay
+                                    ? "Order Sedang Berjalan "
+                                    : "Order Masuk :",
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF616161)),
+                              ),
+                            ),
+                            Container(
+                              child: Column(
+                                children: [
+                                  value.isOnTheWay
+                                      ? GestureDetector(
                                           onTap: () {
-                                            index = i;
                                             _getPenumpangByIndex();
                                           },
                                           child: Container(
@@ -765,9 +633,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                               child: Container(
                                                                 width: 150,
                                                                 child: Text(
-                                                                  value
-                                                                      .listPenumpang[
-                                                                          i]
+                                                                  value.onTheWay
                                                                       .costumerName,
                                                                   style: TextStyle(
                                                                       color: Colors
@@ -783,9 +649,7 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                             Container(
                                                               width: 150,
                                                               child: Text(
-                                                                value
-                                                                    .listPenumpang[
-                                                                        i]
+                                                                value.onTheWay
                                                                     .destinationAddress,
                                                                 style:
                                                                     TextStyle(
@@ -799,98 +663,298 @@ class _HomeDriverScreenState extends State<HomeDriverScreen> {
                                                         ),
                                                       ),
                                                       Spacer(),
-                                                      Column(
+                                                      Container(
+                                                        child: Row(
+                                                          children: [
+                                                            Column(
+                                                              children: [
+                                                                Container(
+                                                                  margin: EdgeInsets
+                                                                      .only(
+                                                                          bottom:
+                                                                              5),
+                                                                  child: Text(
+                                                                    formatCurrency
+                                                                        .format(value
+                                                                            .onTheWay
+                                                                            .fee),
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black54,
+                                                                      fontSize:
+                                                                          14,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                GestureDetector(
+                                                                  onTap: () {
+                                                                    UIBlock.block(
+                                                                        context);
+                                                                    _cancelOrder(
+                                                                        value
+                                                                            .onTheWay
+                                                                            .id,
+                                                                        value
+                                                                            .onTheWay
+                                                                            .uuid);
+                                                                  },
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .cancel_outlined,
+                                                                    color: Colors
+                                                                        .redAccent,
+                                                                    size: 40,
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Container(
+                                                              width: 8,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      )
+                                                    ],
+                                                  ),
+                                                  Container(
+                                                    margin: EdgeInsets.fromLTRB(
+                                                        10, 20, 10, 5),
+                                                    width: double.infinity,
+                                                    height: 35,
+                                                    child: TextButton(
+                                                      onPressed: () {
+                                                        _showMyDialogFinish(
+                                                            value.onTheWay.id);
+                                                      },
+                                                      child: Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .center,
                                                         crossAxisAlignment:
                                                             CrossAxisAlignment
                                                                 .center,
                                                         children: [
-                                                          Container(
-                                                            margin:
-                                                                EdgeInsets.only(
-                                                                    bottom: 5),
-                                                            child: Text(
-                                                              formatCurrency
-                                                                  .format(value
-                                                                      .listPenumpang[
-                                                                          i]
-                                                                      .fee),
-                                                              style: TextStyle(
-                                                                color: Colors
-                                                                    .black54,
-                                                                fontSize: 14,
-                                                              ),
-                                                            ),
+                                                          Icon(
+                                                            Icons.check_circle,
+                                                            size: 20,
                                                           ),
                                                           Container(
-                                                            child:
-                                                                GestureDetector(
-                                                              onTap: () {
-                                                                if (index ==
-                                                                    i) {
-                                                                  UIBlock.block(
-                                                                      context);
-                                                                  _terimaPesanan(
-                                                                      value
-                                                                          .listPenumpang[
-                                                                              i]
-                                                                          .id,
-                                                                      value
-                                                                          .listPenumpang[
-                                                                              i]
-                                                                          .uuid);
-                                                                }
-                                                              },
-                                                              child: Icon(
-                                                                Icons
-                                                                    .check_circle,
-                                                                color: index !=
-                                                                        i
-                                                                    ? Color(
-                                                                        0xFFabe6ed)
-                                                                    : primaryColor,
-                                                                size: 40,
-                                                              ),
-                                                            ),
+                                                            width: 10,
                                                           ),
+                                                          Text(
+                                                              "Selesaikan Pesanan"),
                                                         ],
-                                                      )
-                                                    ],
+                                                      ),
+                                                      style: flatButtonStyle,
+                                                    ),
                                                   )
                                                 ],
                                               ),
                                             ),
                                           ),
-                                        );
-                                      },
-                                    ),
-                              Container(
-                                width: double.infinity,
-                                height: 400,
-                                margin: EdgeInsets.only(
-                                    bottom: 20, left: 14, right: 14, top: 10),
-                                child: currentPostion.latitude.isNaN == 0
-                                    ? Container()
-                                    : GoogleMap(
-                                        mapType: MapType.normal,
-                                        myLocationEnabled: true,
-                                        initialCameraPosition: CameraPosition(
-                                          target: currentPostion,
-                                          zoom: 16,
+                                        )
+                                      : ListView.builder(
+                                          shrinkWrap: true,
+                                          physics:
+                                              NeverScrollableScrollPhysics(),
+                                          itemCount: value.listPenumpang.length,
+                                          itemBuilder:
+                                              (BuildContext context, int i) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                index = i;
+                                                _getPenumpangByIndex();
+                                              },
+                                              child: Container(
+                                                margin: EdgeInsets.fromLTRB(
+                                                    14, 10, 14, 10),
+                                                padding: EdgeInsets.all(10),
+                                                width: double.infinity,
+                                                decoration: BoxDecoration(
+                                                  color: Colors.white,
+                                                  boxShadow: [
+                                                    BoxShadow(
+                                                      offset: Offset(5, 3),
+                                                      blurRadius: 3,
+                                                      color: primaryColor
+                                                          .withOpacity(0.18),
+                                                    ),
+                                                  ],
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                    Radius.circular(10),
+                                                  ),
+                                                ),
+                                                child: Container(
+                                                  child: Column(
+                                                    crossAxisAlignment:
+                                                        CrossAxisAlignment
+                                                            .start,
+                                                    children: [
+                                                      Row(
+                                                        children: [
+                                                          Icon(
+                                                            Icons
+                                                                .account_circle_rounded,
+                                                            size: 50,
+                                                            color: Colors
+                                                                .black45
+                                                                .withOpacity(
+                                                                    0.12),
+                                                          ),
+                                                          Container(
+                                                            margin:
+                                                                EdgeInsets.only(
+                                                                    left: 10),
+                                                            child: Column(
+                                                              crossAxisAlignment:
+                                                                  CrossAxisAlignment
+                                                                      .start,
+                                                              children: [
+                                                                Padding(
+                                                                  padding: const EdgeInsets
+                                                                          .symmetric(
+                                                                      vertical:
+                                                                          5),
+                                                                  child:
+                                                                      Container(
+                                                                    width: 150,
+                                                                    child: Text(
+                                                                      value
+                                                                          .listPenumpang[
+                                                                              i]
+                                                                          .costumerName,
+                                                                      style: TextStyle(
+                                                                          color: Colors
+                                                                              .black54,
+                                                                          fontSize:
+                                                                              18,
+                                                                          fontWeight:
+                                                                              FontWeight.bold),
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                                Container(
+                                                                  width: 150,
+                                                                  child: Text(
+                                                                    value
+                                                                        .listPenumpang[
+                                                                            i]
+                                                                        .destinationAddress,
+                                                                    style:
+                                                                        TextStyle(
+                                                                      color: Colors
+                                                                          .black54,
+                                                                      fontSize:
+                                                                          12,
+                                                                    ),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                          ),
+                                                          Spacer(),
+                                                          Column(
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              Container(
+                                                                margin: EdgeInsets
+                                                                    .only(
+                                                                        bottom:
+                                                                            5),
+                                                                child: Text(
+                                                                  formatCurrency
+                                                                      .format(value
+                                                                          .listPenumpang[
+                                                                              i]
+                                                                          .fee),
+                                                                  style:
+                                                                      TextStyle(
+                                                                    color: Colors
+                                                                        .black54,
+                                                                    fontSize:
+                                                                        14,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                              Container(
+                                                                child:
+                                                                    GestureDetector(
+                                                                  onTap: () {
+                                                                    if (index ==
+                                                                        i) {
+                                                                      UIBlock.block(
+                                                                          context);
+                                                                      _terimaPesanan(
+                                                                          value
+                                                                              .listPenumpang[
+                                                                                  i]
+                                                                              .id,
+                                                                          value
+                                                                              .listPenumpang[i]
+                                                                              .uuid);
+                                                                    }
+                                                                  },
+                                                                  child: Icon(
+                                                                    Icons
+                                                                        .check_circle,
+                                                                    color: index !=
+                                                                            i
+                                                                        ? Color(
+                                                                            0xFFabe6ed)
+                                                                        : primaryColor,
+                                                                    size: 40,
+                                                                  ),
+                                                                ),
+                                                              ),
+                                                            ],
+                                                          )
+                                                        ],
+                                                      )
+                                                    ],
+                                                  ),
+                                                ),
+                                              ),
+                                            );
+                                          },
                                         ),
-                                        markers: _markers.toSet(),
-                                        onMapCreated:
-                                            (GoogleMapController controller) {
-                                          _controller.complete(controller);
-                                        },
-                                      ),
+                                  Container(
+                                    width: double.infinity,
+                                    height: 400,
+                                    margin: EdgeInsets.only(
+                                        bottom: 20,
+                                        left: 14,
+                                        right: 14,
+                                        top: 10),
+                                    child: currentPostion.latitude.isNaN == 0
+                                        ? Container()
+                                        : GoogleMap(
+                                            mapType: MapType.normal,
+                                            myLocationEnabled: true,
+                                            initialCameraPosition:
+                                                CameraPosition(
+                                              target: currentPostion,
+                                              zoom: 16,
+                                            ),
+                                            markers: _markers.toSet(),
+                                            onMapCreated: (GoogleMapController
+                                                controller) {
+                                              _controller.complete(controller);
+                                            },
+                                          ),
+                                  ),
+                                ],
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                      ],
-                    ),
-                  );
-          },
+                      ),
+                    );
+            },
+          ),
         ),
       ),
     );
