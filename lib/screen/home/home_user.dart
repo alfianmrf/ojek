@@ -546,7 +546,7 @@ class _HomeUserScreenState extends State<HomeUserScreen> {
                                                                       .bold),
                                                         ),
                                                         Text(
-                                                          "Jawa Timur Park",
+                                                          user.auth!.phone,
                                                           style: TextStyle(
                                                             color:
                                                                 Colors.black45,
