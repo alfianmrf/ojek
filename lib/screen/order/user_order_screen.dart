@@ -31,12 +31,9 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
     super.initState();
     OneSignal.shared.setNotificationWillShowInForegroundHandler(
         (OSNotificationReceivedEvent event) {
-      print("keluaar waktu notif muncul");
-      print(event.notification.body);
-      // print(event.notification.additionalData);
       var data = event.notification.additionalData;
-      if (data!['role'] ==
-          Provider.of<AppModel>(context, listen: false).auth!.role) {
+      print("dataaaaaaaaaaaaa");
+      if (data!['role'] == "penumpang") {
         _getInfoDriver();
         Navigator.pushReplacement(
             context, MaterialPageRoute(builder: (context) => HomeUserScreen()));
@@ -93,60 +90,63 @@ class _UserOrderScreenState extends State<UserOrderScreen> {
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/images/logoNoBackground.png',
-              fit: BoxFit.contain,
-              width: 170,
-            ),
-            Container(
-              child: Column(
-                children: [
-                  Container(
-                    margin: EdgeInsets.only(top: 20),
-                    child: Text(
-                      "Sedang Mencari Driver...",
-                      style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    margin: EdgeInsets.only(top: 10),
-                    width: 300,
-                    child: Text(
-                      "Mohon tunggu, kami sedang mencarikan driver untuk kamu.",
-                      style: TextStyle(
-                        fontSize: 14,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                  ),
-                  Container(
-                    height: 12,
-                  ),
-                  TextButton(
-                    style: borderButtonStyle,
-                    onPressed: () {
-                      _cancelOrder();
-                    },
-                    child: Text(
-                      "Batalkan",
-                      style: TextStyle(
-                        fontSize: 16,
-                        color: Color(0xFFFCCCBC),
-                      ),
-                    ),
-                  )
-                ],
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
+                'assets/images/logoNoBackground.png',
+                fit: BoxFit.contain,
+                width: 170,
               ),
-            )
-          ],
+              Container(
+                child: Column(
+                  children: [
+                    Container(
+                      margin: EdgeInsets.only(top: 20),
+                      child: Text(
+                        "Sedang Mencari Driver...",
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    Container(
+                      margin: EdgeInsets.only(top: 10),
+                      width: 300,
+                      child: Text(
+                        "Mohon tunggu, kami sedang mencarikan driver untuk kamu.",
+                        style: TextStyle(
+                          fontSize: 14,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                    Container(
+                      height: 12,
+                    ),
+                    TextButton(
+                      style: borderButtonStyle,
+                      onPressed: () {
+                        _cancelOrder();
+                      },
+                      child: Text(
+                        "Batalkan",
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Color(0xFFFCCCBC),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );

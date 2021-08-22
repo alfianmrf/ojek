@@ -35,3 +35,7 @@ final spinkit = SpinKitFadingCube(
   color: Color(0xFFFCCCBC),
   size: 50.0,
 );
+final spinkitWht = SpinKitFadingCube(
+  color: Colors.white,
+  size: 50.0,
+);
